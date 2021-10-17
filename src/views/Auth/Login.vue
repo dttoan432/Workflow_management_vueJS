@@ -25,9 +25,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 500px;
-    //background-image: url("src/assets/logo.png");
-    background-color: red;
+    background-image: url('../../assets/images/bg-login.png');
+    background-size: auto;
+    background-repeat: no-repeat;
+    height: 100vh;
 
     .loginWrap {
         background: #f5f5f5;
