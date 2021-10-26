@@ -34,12 +34,26 @@
                 width: 35px;
                 height: 35px;
                 border-radius: 50%;
+                cursor: pointer;
             }
         }
     }
 
     .content {
-        background-color: #f6f8f9;
-        height: 95vh;
+        //background-color: #f6f8f9;
+        background-color: grey;
+        height: 94vh;
+    }
+}
+
+.el-dropdown-menu {
+    padding: 0;
+    .el-dropdown-menu__item {
+        width: 150px;
+        padding: 0;
+
+        .item-mng {
+            padding: 0 15px;
+        }
     }
 }

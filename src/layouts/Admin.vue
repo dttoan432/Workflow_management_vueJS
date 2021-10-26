@@ -9,8 +9,18 @@
         <el-dropdown trigger="click">
           <img src="../assets/images/avatar-login.svg" alt="">
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-setting">Tài khoản</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">Đăng xuất</el-dropdown-item>
+            <el-dropdown-item>
+              <div class="item-mng" @click="handlePush('user')">
+                <i class="el-icon-setting"></i>
+                Tài khoản
+              </div>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <div class="item-mng" @click="handlePush('login')">
+                <i class="el-icon-switch-button"></i>
+                Đăng xuất
+              </div>
+            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -29,7 +39,12 @@
 
 <script>
 export default {
-  name: "Admin"
+  name: "Admin",
+  methods: {
+    handlePush(value) {
+      this.$router.push({ path: `/${value}` })
+    }
+  }
 }
 </script>
 
