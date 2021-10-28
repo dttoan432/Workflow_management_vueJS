@@ -1,117 +1,127 @@
 .workflow-wrap {
-    overflow: auto;
-    position: relative;
-    height: 94vh;
+   overflow: auto;
+   position: relative;
+   height: 94vh;
 
-    .list-group {
-        display: flex;
-        width: 500px;
-        margin-top: 20px;
+   .list-group {
+      display: flex;
+      width: 500px;
+      margin-top: 20px;
 
-        .list-group-item {
-            .section {
-                width: 280px;
-                margin: 0 10px;
+      .list-group-item {
+         .section {
+            width: 280px;
+            margin: 0 10px;
 
-                .section-box-header {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    margin-bottom: 15px;
+            .section-box-header {
+               display: flex;
+               align-items: center;
+               justify-content: space-between;
+               margin-bottom: 15px;
 
-                    .section-title {
+               .section-title {
+                  font-weight: bold;
+               }
+
+               .section-action {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+
+                  .section-action-box {
+                     margin: 0 1px;
+                     border-radius: 5px;
+
+                     &:hover {
+                        background-color: #edeef0;
+                     }
+
+                     .section-action-icon {
+                        font-size: 16px;
                         font-weight: bold;
-                    }
-
-                    .section-action {
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                        .section-action-box {
-                            margin: 0 1px;
-                            border-radius: 5px;
-
-                            &:hover {
-                                background-color: #edeef0;
-                            }
-
-                            .section-action-icon {
-                                font-size: 16px;
-                                font-weight: bold;
-                                cursor: pointer;
-                                padding: 8px;
-                            }
-                        }
-                    }
-                }
-
-                .section-box-content {
-                    .content-task {
-                        background-color: white;
-                        text-align: left;
-                        border-radius: 5px;
-                        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-
-                        .el-image {
-                            width: 100%;
-                            border-top-left-radius: 5px;
-                            border-top-right-radius: 5px;
-                            //height: 150px;
-                        }
-                        .task-info {
-                            padding: 10px 15px;
-                            margin: 10px 0;
-
-                            .el-checkbox::v-deep {
-                                .el-checkbox__input {
-                                    .el-checkbox__inner {
-                                        border-radius: 50%;
-                                    }
-                                }
-                            }
-
-                            .tag-list {
-                                width: 100%;
-                                margin-top: 15px;
-
-                                .tag-item {
-                                    border-radius: 10px;
-                                    padding: 2px 6px;
-                                    font-size: 12px;
-                                    margin: 0 5px 6px 0;
-                                    display: inline-block;
-                                }
-                            }
-
-                            .deadline {
-                                margin-top: 15px;
-
-                                .deadline-info {
-                                    font-size: 14px;
-                                    margin-left: 5px;
-                                }
-                            }
-                        }
-                    }
-                }
+                        cursor: pointer;
+                        padding: 8px;
+                     }
+                  }
+               }
             }
-        }
-    }
 
-    .task-detail {
-        background-color: white;
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        height: 94vh;
-        width: 36vw;
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        //transform: translateX(-100%);
-        transition: transform .2s ease-in;
-    }
+            .section-box-content {
+               .content-task {
+                  background-color: white;
+                  text-align: left;
+                  border-radius: 5px;
+                  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+                  margin: 10px 0;
+                  .el-image {
+                     width: 100%;
+                     border-top-left-radius: 5px;
+                     border-top-right-radius: 5px;
+                     //height: 150px;
+                  }
 
-    .demo {
-        transform: translateX(-100%);
-        transition: transform .5s cubic-bezier(0.23, 1, 0.32, 1);
-    }
+                  .task-info {
+                     padding: 15px 20px;
+
+                     .task-name {
+                        font-size: 14px;
+                     }
+
+                     .tag-list {
+                        width: 100%;
+                        margin-top: 15px;
+
+                        .tag-item {
+                           border-radius: 10px;
+                           padding: 2px 6px;
+                           font-size: 12px;
+                           margin: 0 5px 6px 0;
+                           display: inline-block;
+                        }
+                     }
+
+                     .task-other-info {
+                        display: flex;
+                        justify-content: space-between;
+                        padding-top: 15px;
+
+                        .deadline {
+                           width: 50%;
+
+                           .deadline-picker {
+                              font-size: 13px;
+                           }
+
+                           .deadline-info {
+                              font-size: 12px;
+                              margin-left: 5px;
+                           }
+                        }
+
+                        .todo-attach {
+                           width: 50%;
+                           text-align: right;
+
+                           .todo-attach-item {
+                              font-size: 13px;
+
+                              &:first-child {
+                                 margin-right: 15px;
+                              }
+
+                              .todo-attach-item-info {
+                                 font-size: 12px;
+                                 margin-left: 3px;
+                              }
+                           }
+
+
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
 }
