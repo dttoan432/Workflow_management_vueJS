@@ -4,120 +4,170 @@
    height: 94vh;
 
    .list-group {
-      display: flex;
-      width: 500px;
       margin-top: 20px;
+      padding: 0;
 
-      .list-group-item {
-         .section {
-            width: 280px;
-            margin: 0 10px;
+      .draggable-transition {
+         display: flex;
 
-            .section-box-header {
-               display: flex;
-               align-items: center;
-               justify-content: space-between;
-               margin-bottom: 15px;
+         .list-group-item {
+            .section {
+               width: 280px;
+               margin: 0 10px;
 
-               .section-title {
-                  font-weight: bold;
-               }
-
-               .section-action {
+               .section-box-header {
                   display: flex;
                   align-items: center;
                   justify-content: space-between;
+                  margin-bottom: 15px;
 
-                  .section-action-box {
-                     margin: 0 1px;
-                     border-radius: 5px;
+                  .section-title {
+                     font-weight: bold;
+                  }
 
-                     &:hover {
-                        background-color: #edeef0;
-                     }
+                  .section-action {
+                     display: flex;
+                     align-items: center;
+                     justify-content: space-between;
 
-                     .section-action-icon {
-                        font-size: 16px;
-                        font-weight: bold;
-                        cursor: pointer;
-                        padding: 8px;
+                     .section-action-box {
+                        margin: 0 1px;
+                        border-radius: 5px;
+
+                        &:hover {
+                           background-color: #edeef0;
+                        }
+
+                        .section-action-icon {
+                           font-size: 16px;
+                           font-weight: bold;
+                           cursor: pointer;
+                           padding: 8px;
+                        }
                      }
                   }
                }
-            }
 
-            .section-box-content {
-               .content-task {
-                  background-color: white;
-                  text-align: left;
+               .section-box-content {
+                  .content-task {
+                     background-color: white;
+                     text-align: left;
+                     border-radius: 5px;
+                     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+                     margin: 10px 0;
+                     .el-image {
+                        width: 100%;
+                        border-top-left-radius: 5px;
+                        border-top-right-radius: 5px;
+                        //height: 150px;
+                     }
+
+                     .task-info {
+                        padding: 15px 20px;
+
+                        .task-name {
+                           font-size: 14px;
+                        }
+
+                        .tag-list {
+                           width: 100%;
+                           margin-top: 15px;
+
+                           .tag-item {
+                              border-radius: 10px;
+                              padding: 2px 6px;
+                              font-size: 12px;
+                              margin: 0 5px 6px 0;
+                              display: inline-block;
+                              text-transform: capitalize
+                           }
+                        }
+
+                        .task-other-info {
+                           display: flex;
+                           justify-content: space-between;
+                           padding-top: 15px;
+
+                           .deadline {
+                              width: 50%;
+
+                              .deadline-picker {
+                                 font-size: 13px;
+                              }
+
+                              .deadline-info {
+                                 font-size: 12px;
+                                 margin-left: 5px;
+                              }
+                           }
+
+                           .todo-attach {
+                              width: 50%;
+                              text-align: right;
+
+                              .todo-attach-item {
+                                 font-size: 13px;
+
+                                 &:first-child {
+                                    margin-right: 15px;
+                                 }
+
+                                 .todo-attach-item-info {
+                                    font-size: 12px;
+                                    margin-left: 3px;
+                                 }
+                              }
+
+
+                           }
+                        }
+                     }
+                  }
+               }
+
+               .add_card_other_1 {
+                  .add_card {
+                     display: flex;
+                     align-items: center;
+                     justify-content: center;
+                     font-weight: bold;
+                     border-radius: 5px;
+                     font-size: 14px;
+                     height: 36px;
+                     cursor: pointer;
+
+                     &:hover {
+                        background-color: rgba(21, 7, 38, 0.04);
+                     }
+
+                     .add-card-icon {
+                        margin-right: 3px;
+                        font-weight: bold;
+                     }
+                  }
+               }
+               .add_card_other_2 {
                   border-radius: 5px;
+                  align-items: start;
+                  background-color: #f2f5f6;
+                  height: 85vh;
                   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-                  margin: 10px 0;
-                  .el-image {
-                     width: 100%;
-                     border-top-left-radius: 5px;
-                     border-top-right-radius: 5px;
-                     //height: 150px;
+               }
+               .add-new-list {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-weight: bold;
+                  height: 30px;
+                  cursor: pointer;
+
+                  &:hover {
+                     color: #04befe;
                   }
 
-                  .task-info {
-                     padding: 15px 20px;
-
-                     .task-name {
-                        font-size: 14px;
-                     }
-
-                     .tag-list {
-                        width: 100%;
-                        margin-top: 15px;
-
-                        .tag-item {
-                           border-radius: 10px;
-                           padding: 2px 6px;
-                           font-size: 12px;
-                           margin: 0 5px 6px 0;
-                           display: inline-block;
-                        }
-                     }
-
-                     .task-other-info {
-                        display: flex;
-                        justify-content: space-between;
-                        padding-top: 15px;
-
-                        .deadline {
-                           width: 50%;
-
-                           .deadline-picker {
-                              font-size: 13px;
-                           }
-
-                           .deadline-info {
-                              font-size: 12px;
-                              margin-left: 5px;
-                           }
-                        }
-
-                        .todo-attach {
-                           width: 50%;
-                           text-align: right;
-
-                           .todo-attach-item {
-                              font-size: 13px;
-
-                              &:first-child {
-                                 margin-right: 15px;
-                              }
-
-                              .todo-attach-item-info {
-                                 font-size: 12px;
-                                 margin-left: 3px;
-                              }
-                           }
-
-
-                        }
-                     }
+                  .add-card-icon {
+                     margin-right: 3px;
+                     font-weight: bold;
                   }
                }
             }
