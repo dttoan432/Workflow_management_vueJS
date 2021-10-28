@@ -28,7 +28,7 @@
     <div class="content">
       <el-row>
         <el-col :span="24">
-          <div class="grid-content">
+          <div>
             <router-view/>
           </div>
         </el-col>
