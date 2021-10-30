@@ -6,6 +6,7 @@
    .list-group {
       margin-top: 20px;
       padding: 0;
+      margin-left: 50px;
 
       .draggable-transition {
          display: flex;
@@ -49,12 +50,16 @@
                }
 
                .section-box-content {
+                  overflow: auto;
+                  max-height: 80vh;
+
                   .content-task {
                      background-color: white;
                      text-align: left;
                      border-radius: 5px;
                      box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-                     margin: 10px 0;
+                     margin: 0 0 10px 0;
+
                      .el-image {
                         width: 100%;
                         border-top-left-radius: 5px;
@@ -146,13 +151,15 @@
                      }
                   }
                }
+
                .add_card_other_2 {
                   border-radius: 5px;
                   align-items: start;
                   background-color: #f2f5f6;
-                  height: 85vh;
+                  height: 80vh;
                   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
                }
+
                .add-new-list {
                   display: flex;
                   align-items: center;
@@ -174,4 +181,110 @@
          }
       }
    }
+
+   .add-to-list {
+      position: fixed;
+      //bottom: 20px;
+      top: 6vh;
+      //right: 15px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      flex-direction: column;
+
+      .stick {
+         border: 1px solid black;
+         height: 10px;
+      }
+
+      .ico-add-list {
+         font-size: 16px;
+         padding: 10px;
+         border-radius: 50%;
+         background-color: black;
+         color: white;
+         cursor: pointer;
+      }
+
+      .box-scp {
+         position: relative;
+
+         input {
+            width: 90%;
+            color: black;
+            font-size: 14px;
+            background-color: transparent;
+            border: 2px solid transparent;
+            border-bottom-color: hsla(185, 100%, 62%, 0.2);
+
+
+            &:focus {
+               outline: none;
+            }
+
+            &::placeholder {
+               color: hsla(0, 0%, 100%, 0.6);
+            }
+
+            &:focus ~ span {
+               transform-origin: bottom left;
+               transform: scaleX(1);
+            }
+         }
+
+         span {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #3cefff;
+            transform-origin: bottom right;
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+         }
+      }
+   }
+}
+
+.inp-add-list {
+   -webkit-appearance: none;
+   background-color: #FFF;
+   background-image: none;
+   border-radius: 4px;
+   border: 1px solid #DCDFE6;
+   box-sizing: border-box;
+   color: #606266;
+   display: inline-block;
+   height: 40px;
+   line-height: 40px;
+   outline: 0;
+   padding: 0 15px;
+   transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+   width: 100%;
+   font-size: 14px;
+
+   &:focus {
+      border-color: #409EFF;
+      outline: 0;
+   }
+
+   &::placeholder {
+      color: #606266b5;
+   }
+}
+
+.el-popper::v-deep.el-popover{
+   padding: 0;
+}
+
+::-webkit-scrollbar {
+   width: 10px;
+   height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+   background-color: gray;
+   border-radius: 5px;
 }

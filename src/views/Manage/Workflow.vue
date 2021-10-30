@@ -1,5 +1,16 @@
 <template>
    <div class="workflow-wrap">
+      <div class="add-to-list">
+         <div class="stick"></div>
+         <el-tooltip class="item" effect="dark" content="Thêm danh sách" placement="left">
+            <el-popover class="aaa" placement="left" trigger="click">
+               <i class="el-icon-plus ico-add-list" slot="reference"></i>
+               <div class="box-scp">
+                  <input type="text" placeholder="Nhập tên danh sách" v-focus v-model="newList" @keypress.enter="addNewList()">
+                  <span></span>
+            </el-popover>
+         </el-tooltip>
+      </div>
       <draggable class="list-group" tag="ul" v-model="list" v-bind="dragOptions"
                  @start="drag = true" @end="drag = false">
          <transition-group class="draggable-transition" type="transition" :name="!drag ? 'flip-list' : null">
@@ -19,13 +30,14 @@
                      </div>
                   </div>
                   <draggable class="task-group section-box-content" :list="element.task" group="task" @change="log">
-                     <div class="task-group-item content-task" v-for="(taskItem, taskIndex) in element.task" :key="taskIndex">
-<!--                        <el-image :src="taskItem.file[0].name" v-if="taskIndex===0"></el-image>-->
+                     <div class="task-group-item content-task" v-for="(taskItem, taskIndex) in element.task"
+                          :key="taskIndex">
+                        <!--                        <el-image :src="taskItem.file[0].name" v-if="taskIndex===0"></el-image>-->
                         <div class="task-info">
                            <div class="task-name">{{ taskItem.name }}</div>
                            <div class="tag-list">
                               <span v-for="(tagItem, tagIndex) in taskItem.tag" :key="tagIndex"
-                                  :style="{background: tagItem.color}" class="tag-item">
+                                    :style="{background: tagItem.color}" class="tag-item">
                                  {{ tagItem.name }}
                               </span>
                            </div>
@@ -43,7 +55,9 @@
                                  <i class="el-icon-magic-stick todo-attach-item">
                                     <span class="todo-attach-item-info" v-if="taskItem.todo.length === 0">0/0</span>
                                     <span class="todo-attach-item-info" v-else>
-                                       {{ `${countMissionDone(index, taskIndex)[0]}/${countMissionDone(index, taskIndex)[1]}` }}
+                                       {{
+                                          `${countMissionDone(index, taskIndex)[0]}/${countMissionDone(index, taskIndex)[1]}`
+                                       }}
                                     </span>
                                  </i>
                               </div>
@@ -63,22 +77,24 @@
                </div>
             </div>
 
-            <div class="list-group-item" v-for="(element) in 1" :key="element">
+            <div class="list-group-item" v-for="(element) in 1" :key="element" id="todo">
                <div class="section">
-                  <el-input placeholder="Nhập tên danh sách" autofocus
-                            v-model="newList" v-if="!isNewList" @blur="addNewList()">
-                  </el-input>
                   <div class="add-new-list" @click="showAddNewList()" v-if="isNewList">
                      <i class="el-icon-plus add-card-icon"></i>
                      Thêm danh sách
                   </div>
+                  <input type="text" class="inp-add-list" placeholder="Nhập tên danh sách"
+                         v-model="newList" @keypress.enter="addNewList()" @blur="resetNewList()" v-else>
                </div>
             </div>
          </transition-group>
       </draggable>
-<!--      <div style="text-align: left">-->
-<!--         <el-button type="primary" icon="el-icon-edit" circle @click="dialogTableVisible = true"></el-button>-->
-<!--      </div>-->
+
+
+
+      <!--      <div style="text-align: left">-->
+      <!--         <el-button type="primary" icon="el-icon-edit" circle @click="dialogTableVisible = true"></el-button>-->
+      <!--      </div>-->
 
       <el-dialog title="Shipping address" :visible.sync="dialogTableVisible">
          <template slot="title">
@@ -113,14 +129,14 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
                         },
                      ],
                      todo: [],
                      file: [
-                        { name: 'https://msmobile.com.vn/upload_images/images/hinh-nen-dep-cho-may-tinh-full-hd-2.jpg' }
+                        {name: 'https://msmobile.com.vn/upload_images/images/hinh-nen-dep-cho-may-tinh-full-hd-2.jpg'}
                      ],
                      deadline: '15/06 - 02/10',
                   },
@@ -130,10 +146,10 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
-                        },{
+                        }, {
                            name: 'hard',
                            color: 'burlywood'
                         },
@@ -145,10 +161,10 @@ export default {
                               {
                                  name: 'Công việc 1',
                                  done: true
-                              },{
+                              }, {
                                  name: 'Công việc 2',
                                  done: true
-                              },{
+                              }, {
                                  name: 'Công việc 3',
                                  done: false
                               }
@@ -159,10 +175,10 @@ export default {
                               {
                                  name: 'Công việc 1',
                                  done: true
-                              },{
+                              }, {
                                  name: 'Công việc 2',
                                  done: true
-                              },{
+                              }, {
                                  name: 'Công việc 3',
                                  done: true
                               }
@@ -190,10 +206,10 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
-                        },{
+                        }, {
                            name: 'hard',
                            color: 'burlywood'
                         },
@@ -201,7 +217,7 @@ export default {
                      todo: [],
                      file: [],
                      deadline: '',
-                  }
+                  },
                ],
                isNewCard: true
             },
@@ -214,10 +230,10 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
-                        },{
+                        }, {
                            name: 'hard',
                            color: 'burlywood'
                         },
@@ -244,7 +260,7 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
                         },
@@ -256,10 +272,10 @@ export default {
                               {
                                  name: 'Công việc 1',
                                  done: true
-                              },{
+                              }, {
                                  name: 'Công việc 2',
                                  done: false
-                              },{
+                              }, {
                                  name: 'Công việc 3',
                                  done: false
                               }
@@ -270,10 +286,10 @@ export default {
                               {
                                  name: 'Công việc 1',
                                  done: false
-                              },{
+                              }, {
                                  name: 'Công việc 2',
                                  done: false
-                              },{
+                              }, {
                                  name: 'Công việc 3',
                                  done: true
                               }
@@ -284,10 +300,10 @@ export default {
                               {
                                  name: 'Công việc 1',
                                  done: false
-                              },{
+                              }, {
                                  name: 'Công việc 2',
                                  done: false
-                              },{
+                              }, {
                                  name: 'Công việc 3',
                                  done: true
                               }
@@ -308,7 +324,7 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
                         },
@@ -322,7 +338,7 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
                         },
@@ -336,7 +352,7 @@ export default {
                         {
                            name: 'low',
                            color: '#48dafd'
-                        },{
+                        }, {
                            name: 'medium',
                            color: '#ffa800'
                         },
@@ -352,7 +368,6 @@ export default {
          drag: false,
          title: 'todo',
          dialogTableVisible: false,
-         test: ''
       };
    },
    computed: {
@@ -372,6 +387,10 @@ export default {
             el.isNewCard = true
          })
       },
+      resetNewList() {
+         this.isNewList = true
+         this.newList = ''
+      },
       addNewList() {
          this.isNewList = true
          if (this.newList.length > 0) {
@@ -381,6 +400,7 @@ export default {
                isNewCard: true
             });
             this.newList = ''
+            this.scrollEnd()
          }
       },
       showAddNewCard(value) {
@@ -424,7 +444,7 @@ export default {
             });
          });
       },
-      log: function(evt) {
+      log: function (evt) {
          window.console.log(evt);
       },
       countMissionDone(listIndex, taskIndex) {
@@ -440,8 +460,20 @@ export default {
          countArray.push(countTodoDone, countTodo)
 
          return countArray
+      },
+      scrollEnd() {
+         setTimeout( function () {
+            document.getElementById('todo').scrollIntoView()
+         }, 100)
       }
-   }
+   },
+   directives: {
+      focus: {
+         inserted: function (el) {
+            el.focus()
+         }
+      }
+   },
 }
 </script>
 
