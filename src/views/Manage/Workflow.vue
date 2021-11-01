@@ -84,9 +84,10 @@
                    @keypress.enter="addNewWork()" @blur="resetNewWork()">
             <span></span>
          </div>
+         <button @click="show = !show">click</button>
       </div>
 
-      <div class="card-detail-wrap">
+      <div :class="{card_detail_wrap:true, card_detail_animation: show, display_none: isDsNone}">
 
       </div>
 
@@ -108,6 +109,8 @@ export default {
    },
    data() {
       return {
+         show: true,
+         isDsNone: false,
          newWork: '',
          isNewWork: true,
          newCard: '',
@@ -909,8 +912,19 @@ export default {
          }
       }
    },
-   mounted() {
-      this.scrollEnd()
+   // mounted() {
+   //    this.scrollEnd()
+   // },
+   watch: {
+      show(value) {
+         if (value) {
+            this.isDsNone = !value;
+         } else {
+            setTimeout(() => {
+               this.isDsNone = !value;
+            }, 1000)
+         }
+      }
    }
 }
 </script>

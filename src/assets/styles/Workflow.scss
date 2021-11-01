@@ -113,6 +113,23 @@
       }
    }
 
+   .card_detail_wrap {
+      position: absolute;
+      right: 0;
+      width: 35vw;
+      height: 93vh;
+      background-color: #04befe;
+
+      transition-timing-function: ease-in;
+      transition: 1s;
+      transform: translateX(100%);
+   }
+
+   .card_detail_animation {
+      transition-timing-function: ease-out;
+      transition: 1s;
+      transform: translateX(0%);
+   }
    .el-dialog__wrapper::v-deep .el-dialog {
       border-radius: 10px;
    }
@@ -122,6 +139,9 @@
    }
 }
 
+.display_none {
+   display: none;
+}
 .task-info {
    padding: 15px 20px;
 
