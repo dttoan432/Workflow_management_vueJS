@@ -3,7 +3,7 @@
     <div class="header">
       <div class="logo">
         <i class="el-icon-eleme"></i>
-        <span>Penguin</span>
+        <span @click="handlePush('/workflow')">Penguin</span>
       </div>
       <div class="user">
         <el-dropdown trigger="click">
