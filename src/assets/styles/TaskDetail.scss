@@ -3,12 +3,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 0 10px 0;
+      padding: 10px 15px;
       border-bottom: 1px solid rgb(192 196 204 / 74%);
 
       .card-title {
-         //background-color: #04befe;
-         width: 85%;
+         width: 60%;
          text-align: left;
          height: 37px;
 
@@ -16,7 +15,7 @@
             width: 90%;
             height: 100%;
             font-weight: bold;
-            font-size: 24px;
+            font-size: 20px;
             //background-color: #04befe;
             border: none;
 
@@ -32,7 +31,7 @@
             font-size: 18px;
             padding: 10px;
             border-radius: 6px;
-            margin-left: 10px;
+            //margin-left: 10px;
             cursor: pointer;
 
             &:hover {
@@ -43,15 +42,190 @@
    }
 
    .card-content {
-      margin-top: 40px;
+      margin-top: 25px;
+      text-align: left;
+      padding: 0 15px;
+      //background-color: #04befe;
 
-      textarea {
-         width: 95.5%;
-         border-radius: 4px;
-         border: 1px solid #DCDFE6;
-         padding: 10px 15px;
-         font-size: 14px;
-         color: #606266;
+      .content {
+         display: flex;
+         align-items: center;
+         margin-bottom: 25px;
+
+         .left-box {
+            width: 20%;
+
+            label {
+               font-size: 14px;
+               margin-left: 5px;
+            }
+         }
+
+         .right-box {
+            width: 80%;
+            position: relative;
+
+            .el-icon-date {
+               font-size: 16px;
+               padding: 8px;
+               border-radius: 50%;
+               cursor: pointer;
+               border: 1px solid grey;
+
+               &:hover {
+                  background-color: #edeef0;
+               }
+            }
+
+            .deadline-item {
+               position: absolute;
+               left: 1%;
+               width: 30px;
+               height: 30px;
+               border-radius: 50%;
+               border: none;
+               background-color: unset;
+               opacity: .1;
+               cursor: pointer;
+               z-index: -5;
+            }
+
+            .time-span {
+               font-size: 15px;
+               margin-left: 10px;
+            }
+
+            .pill-wrap {
+               display: flex;
+               align-items: center;
+
+               .pill {
+                  border-radius: 10px;
+                  font-size: 12px;
+                  height: 20px;
+                  line-height: 20px;
+                  padding: 0 8px;
+                  color: white;
+                  display: inline-block;
+                  margin-right: 5px;
+               }
+
+               .el-icon-edit {
+                  margin-left: 15px;
+                  cursor: pointer;
+
+                  &:hover {
+                     color: #04befe;
+                  }
+               }
+            }
+
+            .el-textarea {
+               width: 100%;
+            }
+
+         }
+      }
+
+      .content-other {
+         align-items: start;
+      }
+
+      .todo-wrap {
+         .todo-box {
+            margin-bottom: 60px;
+
+            .todo-parent {
+               margin-bottom: 15px;
+
+               .todo-parent-title {
+                  margin-bottom: 5px;
+                  display: flex;
+                  justify-content: space-between;
+
+                  .todo-parent-action {
+                     font-size: 14px;
+                     margin-right: 18px;
+
+                     &:hover {
+                        color: #409eff;
+                        cursor: pointer;
+                     }
+                  }
+               }
+            }
+
+            .todo-children {
+               display: flex;
+               flex-direction: column;
+
+               .todo-children-checkbox {
+                  //background-color: #4d84e2;
+                  margin-right: 0;
+                  padding: 5px;
+
+                  &:hover {
+                     background-color: #80808024;
+                  }
+               }
+
+               .el-checkbox::v-deep .el-checkbox__input .el-checkbox__inner {
+                  border-radius: 50%;
+               }
+
+               .list-btn-new-children {
+                  position: relative;
+                  width: 100%;
+
+                  .new-children {
+                     position: absolute;
+                     display: flex;
+                     align-items: center;
+                     margin-top: 10px;
+                     width: 100%;
+                     //opacity: 0;
+
+                     .btn-oop {
+                        display: flex;
+                        margin-right: 10px;
+                     }
+
+                     .el-button-group .el-button--primary:last-child {
+                        border-left-color: #b3d8ff;
+                     }
+
+                     .new-name-children {
+                        width: 100%;
+                        -webkit-appearance: none;
+                        background-color: #FFF;
+                        background-image: none;
+                        border-radius: 4px;
+                        border: 1px solid #DCDFE6;
+                        box-sizing: border-box;
+                        color: #606266;
+                        display: inline-block;
+                        height: 28px;
+                        line-height: 28px;
+                        outline: 0;
+                        font-size: 14px;
+                        padding: 0 15px;
+                        transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+
+                        &::placeholder {
+                           font-size: 14px;
+                           color: #606266c1;
+                        }
+
+                        &:focus {
+                           border-color: #409EFF;
+                           outline: 0;
+                        }
+                     }
+                  }
+               }
+            }
+         }
       }
    }
 }
+

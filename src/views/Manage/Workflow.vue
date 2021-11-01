@@ -60,7 +60,7 @@
                                     <i class="el-icon-paperclip todo-attach-item">
                                        <span class="todo-attach-item-info">0</span>
                                     </i>
-                                    <i class="el-icon-magic-stick todo-attach-item">
+                                    <i class="el-icon-star-off todo-attach-item">
                                        <span class="todo-attach-item-info">0/0</span>
                                     </i>
                                  </div>
@@ -84,21 +84,19 @@
                    @keypress.enter="addNewWork()" @blur="resetNewWork()">
             <span></span>
          </div>
-         <button @click="show = !show">click</button>
       </div>
 
-      <div :class="{card_detail_wrap:true, card_detail_animation: show, display_none: isDsNone}">
-
+      <div :class="{card_detail_wrap:true, animate__animated: true,
+                    animate__fadeInDownBig: isShow, animate__fadeOutUpBig: isDsNone}">
+         <TaskDetail/>
       </div>
-
-      <el-dialog :visible.sync="dialogTableVisible" :show-close="false">
-         <TaskDetail :card="cardItem"/>
-      </el-dialog>
    </div>
 </template>
 
 <script>
+import {mapState, mapMutations} from 'vuex'
 import draggable from "vuedraggable";
+import 'animate.css';
 import TaskDetail from "../../components/TaskDetail";
 
 export default {
@@ -109,8 +107,6 @@ export default {
    },
    data() {
       return {
-         show: true,
-         isDsNone: false,
          newWork: '',
          isNewWork: true,
          newCard: '',
@@ -332,7 +328,7 @@ export default {
                         {
                            id: 14,
                            name: "MISS-Zent",
-                           color: "blue",
+                           color: "#409eff",
                            user_id: 1,
                            created_at: null,
                            updated_at: null,
@@ -811,12 +807,16 @@ export default {
             },
          ],
          drag: false,
-         title: 'todo',
          dialogTableVisible: false,
-         cardItem: []
+
       };
    },
    computed: {
+      ...mapState('workflow', [
+         'isShow',
+         'isDsNone',
+         'card'
+      ]),
       dragOptions() {
          return {
             animation: 500,
@@ -827,6 +827,11 @@ export default {
       }
    },
    methods: {
+      ...mapMutations('workflow', [
+         'updateIsShow',
+         'updateIsDsNone',
+         'updateCard'
+      ]),
       showNewWork() {
          this.isNewWork = false
          this.workflow.forEach((el) => {
@@ -859,8 +864,8 @@ export default {
          this.newCard = ''
       },
       detailCard(value) {
-         this.dialogTableVisible = true
-         this.cardItem = value
+         this.updateIsShow(true)
+         this.updateCard(JSON.parse(JSON.stringify(value)))
       },
       handleDeleteList(index, name) {
          this.$confirm(`Bạn có chắc chắn muốn xóa danh sách "${name}" hay không?`, 'Xóa danh sách', {
@@ -877,27 +882,13 @@ export default {
       log: function (evt) {
          window.console.log(evt);
       },
-      // countMissionDone(workIndex, cardIndex) {
-      //    let countTodo = 0
-      //    let countTodoDone = 0
-      //    let countArray = []
-      //
-      //    let todo = this.list[listIndex].task[taskIndex].todo
-      //    todo.forEach((el) => {
-      //       countTodo += el.needTodo.length
-      //       countTodoDone += el.needTodo.filter((data) => data.done === true).length
-      //    })
-      //    countArray.push(countTodoDone, countTodo)
-      //
-      //    return countArray
-      // },
       scrollEnd() {
          setTimeout(function () {
             document.getElementById('todo').scrollIntoView()
          }, 100)
       },
       renameWork() {
-        this.resetRenameWork()
+         this.resetRenameWork()
       },
       resetRenameWork() {
          this.workflow.forEach((el) => {
@@ -916,14 +907,8 @@ export default {
    //    this.scrollEnd()
    // },
    watch: {
-      show(value) {
-         if (value) {
-            this.isDsNone = !value;
-         } else {
-            setTimeout(() => {
-               this.isDsNone = !value;
-            }, 1000)
-         }
+      isShow(value) {
+         this.updateIsDsNone(!value)
       }
    }
 }
