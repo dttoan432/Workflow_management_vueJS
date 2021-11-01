@@ -60,7 +60,10 @@
                   <div class="pill" v-for="item in card.labels" :key="item.id" :style="{background: item.color}">
                      {{ item.name }}
                   </div>
-                  <i class="el-icon-edit"></i>
+                  <el-popover placement="bottom" width="400" trigger="click">
+                     <i slot="reference" class="el-icon-edit"></i>
+                     <Tag/>
+                  </el-popover>
                </div>
             </div>
          </div>
@@ -128,13 +131,8 @@
                </div>
             </div>
 
-            <el-upload
-                class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :before-remove="beforeRemove"
-                multiple
-                :limit="3"
-                :file-list="fileList">
+            <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/"
+                :before-remove="beforeRemove" multiple :limit="3" :file-list="fileList">
                <el-button size="small" type="primary">Đính kèm</el-button>
             </el-upload>
          </div>
@@ -147,9 +145,14 @@ import {mapMutations, mapState} from "vuex";
 import moment from 'moment';
 import _ from "lodash";
 import 'animate.css';
+// eslint-disable-next-line no-unused-vars
+import Tag from "./Tag";
 
 export default {
    name: "TaskDetail",
+   components: {
+      Tag
+   },
    computed: {
       ...mapState('workflow', [
          'isShow',

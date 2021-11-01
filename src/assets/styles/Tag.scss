@@ -1,0 +1,109 @@
+.tag-container {
+   margin-bottom: 60px;
+   .tag-title {
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(192, 196, 204, 0.74);
+   }
+
+   .tag-color {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+      padding-left: 10px;
+
+      .el-checkbox-button.is-checked::v-deep .el-checkbox-button__inner {
+         color: black;
+         background: unset;
+         box-shadow: unset;
+
+         .color-box {
+            .color-item {
+               .ico-ocp {
+                  display: inline-block;
+               }
+            }
+         }
+      }
+      .el-checkbox-button::v-deep .el-checkbox-button__inner {
+         padding: 0;
+         border: none;
+
+         .color-box {
+            display: flex;
+            align-items: center;
+
+            .color-item {
+               text-align: left;
+               width: 280px;
+               padding: 8px 20px;
+               border-radius: 5px;
+               color: white;
+               margin-bottom: 5px;
+               position: relative;
+
+               .ico-ocp {
+                  position: absolute;
+                  right: 10px;
+                  display: none;
+               }
+            }
+
+            .ico-oop {
+               font-size: 18px;
+               margin-left: 10px;
+               cursor: pointer;
+            }
+         }
+      }
+   }
+
+   .new-tag-wrap {
+      padding-left: 10px;
+      .new-children {
+         position: absolute;
+         display: flex;
+         align-items: center;
+         margin-top: 10px;
+         width: 90%;
+
+         .btn-oop {
+            display: flex;
+            margin-right: 10px;
+         }
+
+         .el-button-group .el-button--primary:last-child {
+            border-left-color: #b3d8ff;
+         }
+
+         .new-name-children {
+            width: 100%;
+            margin-right: 10px;
+            -webkit-appearance: none;
+            background-color: #FFF;
+            background-image: none;
+            border-radius: 4px;
+            border: 1px solid #DCDFE6;
+            box-sizing: border-box;
+            color: #606266;
+            display: inline-block;
+            height: 28px;
+            line-height: 28px;
+            outline: 0;
+            font-size: 14px;
+            padding: 0 15px;
+            transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+
+            &::placeholder {
+               font-size: 14px;
+               color: #606266c1;
+            }
+
+            &:focus {
+               border-color: #409EFF;
+               outline: 0;
+            }
+         }
+      }
+   }
+}
