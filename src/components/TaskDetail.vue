@@ -5,13 +5,36 @@
             <input type="text" class="card-title-name" placeholder="Nhập tên thẻ" v-model="card.title">
          </div>
          <div class="card-utilities">
-            <i class="el-icon-paperclip card-attach-item"></i>
-            <i class="el-icon-star-off card-attach-item"></i>
-            <i class="el-icon-delete card-attach-item" @click="handleDeleteCard(card.title)"></i>
-            <i class="el-icon-close card-attach-item" @click="closeCard()"></i>
+            <el-tooltip class="item" effect="dark" content="Đính kèm" placement="bottom">
+               <el-upload
+                   class="upload-demo"
+                   multiple
+                   :limit="3" action="">
+                  <i class="el-icon-paperclip card-attach-item"></i>
+               </el-upload>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="Việc cần làm" placement="bottom">
+               <el-popover
+                   placement="bottom"
+                   title="Thêm việc cần làm"
+                   width="200"
+                   trigger="click">
+                  <i class="el-icon-star-off card-attach-item" slot="reference"></i>
+                  <div class="box-scp">
+                     <input type="text" placeholder="Nhập tên công việc" v-focus>
+                     <span></span>
+                  </div>
+                  <el-button type="primary" plain size="mini" class="scp-001">Thêm</el-button>
+               </el-popover>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="Xóa thẻ" placement="bottom">
+               <i class="el-icon-delete card-attach-item" @click="handleDeleteCard(card.title)"></i>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="Đóng" placement="bottom">
+               <i class="el-icon-close card-attach-item" @click="closeCard()"></i>
+            </el-tooltip>
          </div>
       </div>
-
       <div class="card-content">
          <div class="content">
             <div class="left-box">
@@ -59,7 +82,10 @@
             <div class="todo-box" v-for="(element, index) in listTodo" :key="element.id">
                <div class="todo-parent">
                   <div class="todo-parent-title">
-                     <i class="el-icon-star-off"> {{ element.title }}</i>
+                     <i class="el-icon-star-off ico-scp">
+                        <input type="text" v-model="element.title">
+                        <span></span>
+                     </i>
                      <div class="todo-parent-action" @click="handleDeleteChildren(element.title)">Xóa</div>
                   </div>
                   <el-progress :percentage="handleCalculatePercent(element)" color="#409eff"></el-progress>
@@ -67,7 +93,13 @@
                <div class="todo-children">
                   <el-checkbox class="todo-children-checkbox" v-for="item in element.children"
                                :key="item.id" :checked="item.status">
-                     {{ item.name }}
+                     <div class="checkbox-action">
+                        <div>{{ item.name }}</div>
+                        <div class="checkbox-action-icon">
+                           <i class="el-icon-edit"></i>
+                           <i class="el-icon-close"></i>
+                        </div>
+                     </div>
                   </el-checkbox>
 
                   <div class="list-btn-new-children">
@@ -89,16 +121,22 @@
                                       @click="toggleNewChildren(index, element.show)">
                            </el-button>
                         </el-button-group>
-<!--                        <el-button type="primary" icon="el-icon-check" plain size="mini" class="btn-oop oop-2"-->
-<!--                           @click="toggleNewChildren(index, element.show)">-->
-<!--                           Lưu-->
-<!--                        </el-button>-->
                         <input type="text" class="new-name-children" placeholder="Tên công việc con"
                                v-model="children" v-focus>
                      </div>
                   </div>
                </div>
             </div>
+
+            <el-upload
+                class="upload-demo"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :before-remove="beforeRemove"
+                multiple
+                :limit="3"
+                :file-list="fileList">
+               <el-button size="small" type="primary">Đính kèm</el-button>
+            </el-upload>
          </div>
       </div>
    </div>
@@ -124,6 +162,7 @@ export default {
    },
    data() {
       return {
+         fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
          deadline: '',
          listTodo: [
             {
@@ -205,6 +244,9 @@ export default {
             });
          });
       },
+      beforeRemove(file) {
+         return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
+      }
    },
    watch: {
       deadline(value) {

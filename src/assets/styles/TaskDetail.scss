@@ -1,5 +1,13 @@
 .card-container {
+   overflow: auto;
+   max-height: 85vh;
+   padding-bottom: 40px;
+
    .card-title-wrap {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 4;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -26,12 +34,13 @@
       }
 
       .card-utilities {
-         //background-color: #2c3e50;
+         display: flex;
+
          .card-attach-item {
             font-size: 18px;
             padding: 10px;
             border-radius: 6px;
-            //margin-left: 10px;
+            color: #2c3e50;
             cursor: pointer;
 
             &:hover {
@@ -133,7 +142,7 @@
 
       .todo-wrap {
          .todo-box {
-            margin-bottom: 60px;
+            margin-bottom: 80px;
 
             .todo-parent {
                margin-bottom: 15px;
@@ -142,7 +151,49 @@
                   margin-bottom: 5px;
                   display: flex;
                   justify-content: space-between;
+                  align-items: center;
 
+                  .ico-scp {
+                     width: 50%;
+                     display: flex;
+                     align-items: center;
+                     position: relative;
+
+                     input {
+                        width: 100%;
+                        color: black;
+                        font-size: 14px;
+                        background-color: transparent;
+                        border: 2px solid transparent;
+                        border-bottom-color: white;
+
+
+                        &:focus {
+                           outline: none;
+                        }
+
+                        &::placeholder {
+                           color: #606266b5;
+                        }
+
+                        &:focus ~ span {
+                           transform-origin: bottom left;
+                           transform: scaleX(1);
+                        }
+                     }
+
+                     span {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        height: 2px;
+                        background-color: #66b1ff;
+                        transform-origin: bottom right;
+                        transform: scaleX(0);
+                        transition: transform 1s ease;
+                     }
+                  }
                   .todo-parent-action {
                      font-size: 14px;
                      margin-right: 18px;
@@ -160,13 +211,37 @@
                flex-direction: column;
 
                .todo-children-checkbox {
-                  //background-color: #4d84e2;
                   margin-right: 0;
                   padding: 5px;
 
                   &:hover {
                      background-color: #80808024;
                   }
+
+                  &::v-deep .el-checkbox__label {
+                     width: 95%;
+
+                     .checkbox-action {
+                        display: flex;
+                        justify-content: space-between;
+                        width: 100%;
+
+                        .checkbox-action-icon {
+                           //opacity: .5;
+
+                           i {
+                              //display: none;
+                              margin: 0 5px;
+                              color: gray;
+
+                              &:hover {
+                                 color: #4d84e2;
+                              }
+                           }
+                        }
+                     }
+                  }
+
                }
 
                .el-checkbox::v-deep .el-checkbox__input .el-checkbox__inner {
@@ -225,7 +300,54 @@
                }
             }
          }
+
+         .upload-demo {
+            //margin-top: 50px;
+         }
       }
    }
 }
 
+.box-scp {
+   position: relative;
+
+   input {
+      width: 100%;
+      color: black;
+      font-size: 14px;
+      background-color: transparent;
+      border: 2px solid transparent;
+      border-bottom-color: hsla(185, 100%, 62%, 0.2);
+
+
+      &:focus {
+         outline: none;
+      }
+
+      &::placeholder {
+         color: #606266b5;
+      }
+
+      &:focus ~ span {
+         transform-origin: bottom left;
+         transform: scaleX(1);
+      }
+   }
+
+   span {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #66b1ff;
+      transform-origin: bottom right;
+      transform: scaleX(0);
+      transition: transform 1s ease;
+   }
+}
+
+.scp-001 {
+   margin-top: 10px;
+   float: right;
+}
