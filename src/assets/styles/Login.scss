@@ -104,6 +104,15 @@ body, input {
                         font-size: 1.1rem;
                     }
                 }
+
+                .error-text {
+                    max-width: 380px;
+                    width: 100%;
+                    text-align: left;
+                    color: red;
+                    padding: 0px 0px 10px 10px;
+                    font-size: 14px;
+                }
             }
 
             .sign-in-form {

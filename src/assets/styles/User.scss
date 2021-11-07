@@ -81,7 +81,6 @@
             .password {
                 margin-top: 50px;
                 text-align: left;
-
             }
 
             .concat {
@@ -107,4 +106,9 @@
 
 .el-input {
     margin-bottom: 15px;
+}
+
+.error-text {
+    font-size: 13px;
+    color: red;
 }
