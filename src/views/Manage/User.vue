@@ -8,13 +8,17 @@
             <div class="info" v-if="active">
                <div class="avatar">
                   <div class="bor-avatar">
-                     <img src="../../assets/images/avatar-login.svg" alt="">
+                     <img v-if="avatar" :src="avatar" alt="">
+                     <img v-else src="../../assets/images/avatar-login.svg" alt="">
                   </div>
                   <div class="change-avatar">
                      <label>Ảnh đại diện</label>
-                     <el-upload action="" class="upload-demo">
-                        <i class="el-icon-edit btn-edit-avatar"></i>
-                     </el-upload>
+                     <label>
+                        <span class="glyphicon glyphicon-folder-open" aria-hidden="true">
+                           <i class="el-icon-edit btn-edit-avatar"></i>
+                        </span>
+                        <input type="file" ref="avatar" accept="image/*" @change="onChangeAvatar" style="display:none">
+                     </label>
                   </div>
                </div>
 
@@ -53,6 +57,7 @@ export default {
    data() {
       return {
          avatar: '',
+         avatarFile: '',
          name: '',
          errorName: '',
          password: '',
@@ -86,8 +91,8 @@ export default {
             if (this.isValidInfo()) {
                let data = new FormData();
                data.append('name', this.name);
-               if (this.avatar !== null && this.avatar !== undefined) {
-                  data.append('avatar', this.avatar);
+               if (typeof this.avatarFile === 'object') {
+                  data.append('avatar', this.avatarFile);
                }
                api.updateUserInfo(data).then(() => {
                   this.resetData()
@@ -142,10 +147,6 @@ export default {
             error = true;
             this.errorPasswordConfirm = "Mật khẩu xác nhận không được để trống";
          }
-         if (this.passwordConfirm && this.passwordConfirm.length < 6) {
-            error = true;
-            this.errorPasswordConfirm = "Mật khẩu xác nhận phải lớn hơn 6 ký tự";
-         }
          if (this.passwordConfirm && this.password && this.passwordConfirm !== this.password) {
             error = true;
             this.errorPasswordConfirm = "Mật khẩu xác nhận không chính xác";
@@ -164,6 +165,11 @@ export default {
          }
 
          return !error;
+      },
+      onChangeAvatar(e) {
+         let avatar = e.target.files[0]
+         this.avatar = URL.createObjectURL(avatar)
+         this.avatarFile = avatar
       }
    },
    watch: {
@@ -182,7 +188,11 @@ export default {
    },
    mounted() {
       this.name = this.authUser.name
-      this.avatar = this.authUser.avatar
+      if (this.authUser.avatar !== null) {
+         this.avatar = `http://vuecourse.zent.edu.vn/storage/${this.authUser.avatar}`
+      }
+
+      // http://vuecourse.zent.edu.vn/storage
    }
 }
 </script>
