@@ -11,7 +11,7 @@
                </div>
                <div class="input-field">
                   <i class="el-icon-lock"></i>
-                  <input type="password" placeholder="Mật khẩu" autocomplete="off" v-model="password"/>
+                  <input type="password" placeholder="Mật khẩu" autocomplete="off" @keypress.enter="handleLogin()" v-model="password"/>
                </div>
                <div class="error-text" v-if="errorInfo">{{ errorInfo }}</div>
                <input type="button" value="Đăng nhập" class="btn solid" @click="handleLogin()"/>
