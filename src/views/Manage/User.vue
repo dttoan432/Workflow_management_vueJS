@@ -8,8 +8,7 @@
             <div class="info" v-if="active">
                <div class="avatar">
                   <div class="bor-avatar">
-                     <img v-if="avatar" :src="avatar" alt="">
-                     <img v-else src="../../assets/images/avatar-login.svg" alt="">
+                     <img :src="avatar" alt="">
                   </div>
                   <div class="change-avatar">
                      <label>Ảnh đại diện</label>
@@ -97,6 +96,11 @@ export default {
                api.updateUserInfo(data).then(() => {
                   this.resetData()
                   api.getAuthUser().then((res) => {
+                     if (res.data.avatar !== null) {
+                        res.data.avatar = `http://vuecourse.zent.edu.vn/storage/users/${res.data.avatar}`
+                     } else {
+                        res.data.avatar = '../assets/images/avatar-login.svg'
+                     }
                      this.updateAuthUser(res.data)
                   })
                   this.$notify({
@@ -189,10 +193,10 @@ export default {
    mounted() {
       this.name = this.authUser.name
       if (this.authUser.avatar !== null) {
-         this.avatar = `http://vuecourse.zent.edu.vn/storage/${this.authUser.avatar}`
+         this.avatar = this.authUser.avatar
+      } else {
+         this.avatar = '../../assets/images/avatar-login.svg'
       }
-
-      // http://vuecourse.zent.edu.vn/storage
    }
 }
 </script>

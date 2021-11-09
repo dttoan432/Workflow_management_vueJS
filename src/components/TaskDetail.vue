@@ -2,7 +2,8 @@
    <div class="card-container">
       <div class="card-title-wrap">
          <div class="card-title">
-            <input type="text" class="card-title-name" placeholder="Nhập tên thẻ" v-model="card.title">
+            <input type="text" class="card-title-name" placeholder="Nhập tên thẻ"
+                   v-model="card.title" @blur="handleUpdateCard()">
          </div>
          <div class="card-utilities">
             <el-tooltip class="item" effect="dark" content="Đính kèm" placement="bottom">
@@ -28,7 +29,7 @@
                </el-popover>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Xóa thẻ" placement="bottom">
-               <i class="el-icon-delete card-attach-item" @click="handleDeleteCard(card.title)"></i>
+               <i class="el-icon-delete card-attach-item" @click="handleDeleteCard()"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Đóng" placement="bottom">
                <i class="el-icon-close card-attach-item" @click="closeCard()"></i>
@@ -43,10 +44,14 @@
             </div>
             <div class="right-box">
                <i class="el-icon-date" @click="showDatePicker()"></i>
-               <el-date-picker class="deadline-item" ref="openDatePicker" size="mini" type="daterange" align="right"
-                               v-model="deadline" start-placeholder="Bắt đầu" end-placeholder="Kết thúc">
+               <el-date-picker class="deadline-item" ref="openDatePicker" size="mini" type="date" align="right"
+                               v-model="deadline" @change="getDate()">
                </el-date-picker>
-               <span class="time-span" v-if="deadline.length > 0">{{ getDate() }}</span>
+<!--               <span class="time-span">{{ deadline }}</span>-->
+               <span class="time-span" v-if="deadlineDisplay.length > 0">
+                  {{ deadlineDisplay }}
+                  <i class="el-icon-close" @click="getDate(false)"></i>
+               </span>
                <span class="time-span" v-else>Đang cập nhật</span>
             </div>
          </div>
@@ -75,6 +80,7 @@
             <div class="right-box">
                <el-input
                    type="textarea"
+                   @blur="handleUpdateCard()"
                    :autosize="{ minRows: 5}"
                    placeholder="Please input"
                    v-model="card.description">
@@ -108,7 +114,7 @@
                   <div class="list-btn-new-children">
                      <div class="new-children">
                         <el-button type="primary" icon="el-icon-plus" plain size="mini" class="btn-oop oop-1"
-                           :class="{ animate__animated: true, animate__fadeInDown: element.show,
+                                   :class="{ animate__animated: true, animate__fadeInDown: element.show,
                            animate__fadeOutUp: element.hide}" @click="toggleNewChildren(index, element.show)">
                            Thêm
                         </el-button>
@@ -132,7 +138,7 @@
             </div>
 
             <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/"
-                :before-remove="beforeRemove" multiple :limit="3" :file-list="fileList">
+                       :before-remove="beforeRemove" multiple :limit="3" :file-list="fileList">
                <el-button size="small" type="primary">Đính kèm</el-button>
             </el-upload>
          </div>
@@ -147,6 +153,7 @@ import _ from "lodash";
 import 'animate.css';
 // eslint-disable-next-line no-unused-vars
 import Tag from "./Tag";
+import api from "../api";
 
 export default {
    name: "TaskDetail",
@@ -157,25 +164,36 @@ export default {
       ...mapState('workflow', [
          'isShow',
          'isDsNone',
-         'card'
+         'cardId',
       ]),
    },
    mounted() {
-
+      if (this.cardId !== '') {
+         api.getCardDetail(this.cardId).then((res) => {
+            console.log(res.data)
+         })
+      }
    },
    data() {
       return {
-         fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+         fileList: [{
+            name: 'food.jpeg',
+            url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+         }, {
+            name: 'food2.jpeg',
+            url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+         }],
          deadline: '',
+         deadlineDisplay: '',
          listTodo: [
             {
                id: 1,
                title: 'Việc cần làm 1',
                children: [
-                  { id: 1, name: 'todo 1', status: true },
-                  { id: 2, name: 'todo 2', status: false },
-                  { id: 3, name: 'todo 3', status: true },
-                  { id: 4, name: 'todo 4', status: true },
+                  {id: 1, name: 'todo 1', status: true},
+                  {id: 2, name: 'todo 2', status: false},
+                  {id: 3, name: 'todo 3', status: true},
+                  {id: 4, name: 'todo 4', status: true},
                ],
                hide: false,
                show: true
@@ -184,16 +202,17 @@ export default {
                id: 2,
                title: 'Việc cần làm 2',
                children: [
-                  { id: 5, name: 'todo 5', status: false },
-                  { id: 6, name: 'todo 6', status: true },
-                  { id: 7, name: 'todo 7', status: false },
-                  { id: 8, name: 'todo 8', status: true },
+                  {id: 5, name: 'todo 5', status: false},
+                  {id: 6, name: 'todo 6', status: true},
+                  {id: 7, name: 'todo 7', status: false},
+                  {id: 8, name: 'todo 8', status: true},
                ],
                hide: false,
                show: true
             },
          ],
-         children: ''
+         children: '',
+         card: ''
       }
    },
    methods: {
@@ -209,22 +228,49 @@ export default {
       showDatePicker() {
          this.$refs.openDatePicker.showPicker()
       },
-      getDate() {
-         let start = moment(this.deadline[0]).format('DD/MM')
-         let end = moment(this.deadline[1]).format('DD/MM')
-
-         return `${start} - ${end}`
+      getDate(value = true) {
+         let date = null
+         this.deadlineDisplay = ''
+         if (value) {
+            date = moment(this.deadline).format('YYYY-MM-DD HH:mm:ss')
+            this.deadlineDisplay = moment(this.deadline).format('DD-MM-YYYY')
+         }
+         api.changeDeadlineCard({
+            deadline: date
+         }, this.card.id).then(() => {
+            this.$message({
+               message: 'Congrats, this is a success message.',
+               type: 'success'
+            });
+            this.$emit('change', 1)
+         })
       },
-      handleDeleteCard(name) {
-         this.$confirm(`Bạn có chắc chắn muốn xóa thẻ "${name}" hay không?`, 'Xóa thẻ', {
+      handleUpdateCard() {
+         let data = {
+            title: this.card.title,
+            description: this.card.description
+         }
+
+         api.updateCard(data, this.card.id).then(() => {
+            this.$emit('change', 1)
+         })
+      },
+      handleDeleteCard() {
+         this.$confirm(`Bạn có chắc chắn muốn xóa thẻ "${this.card.title}" hay không?`, 'Xóa thẻ', {
             confirmButtonText: 'Xóa',
             cancelButtonText: 'Đóng',
             type: 'warning'
          }).then(() => {
-            this.$message({
-               type: 'success',
-               message: 'Xóa thẻ thành công'
-            });
+            api.deleteCard(this.card.id).then(() => {
+               this.$message({
+                  type: 'success',
+                  message: 'Xóa thẻ thành công'
+               });
+               this.closeCard()
+               this.$emit('change', 1)
+            }).catch(() => {
+               this.$message.error('Xóa thẻ thất bại');
+            })
          });
       },
       handleCalculatePercent(value) {
@@ -248,18 +294,26 @@ export default {
          });
       },
       beforeRemove(file) {
-         return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
+         return this.$confirm(`Cancel the transfert of ${file.name} ?`);
       }
    },
    watch: {
-      deadline(value) {
-         if (value.length > 0) {
-            console.log(moment(value[0]).format("DD/MM/YYYY"))
-         }
-      },
+      // deadline(value) {
+      //    let time = moment(value).format('DD-MM-YYYY')
+      //    this.deadline = time
+      // },
       show(value) {
          this.hide = !value
-      }
+      },
+      cardId() {
+         api.getCardDetail(this.cardId).then((res) => {
+            this.card = res.data.data
+            this.deadlineDisplay = ''
+            if (this.card.deadline !== null) {
+               this.deadlineDisplay = moment(this.card.deadline).format('DD-MM-YYYY')
+            }
+         })
+      },
    },
    directives: {
       focus: {

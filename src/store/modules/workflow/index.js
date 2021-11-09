@@ -3,7 +3,7 @@ export default {
     state: {
         isShow: false,
         isDsNone: false,
-        card: []
+        cardId: ''
     },
     getters: {},
     mutations: {
@@ -13,8 +13,8 @@ export default {
         updateIsDsNone: (state, value) => {
             state.isDsNone = value
         },
-        updateCard: (state, value) => {
-            state.card = value
+        updateCardId: (state, value) => {
+            state.cardId = value
         },
     }
 }

@@ -7,7 +7,7 @@
          </div>
          <div class="user">
             <el-dropdown trigger="click">
-               <img src="../assets/images/avatar-login.svg" alt="">
+               <img :src="authUser.avatar" alt="">
                <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item>
                      <div class="item-mng" @click="handlePush('User')">
@@ -66,6 +66,11 @@ export default {
    },
    mounted() {
       api.getAuthUser().then((res) => {
+         if (res.data.avatar !== null) {
+            res.data.avatar = `http://vuecourse.zent.edu.vn/storage/users/${res.data.avatar}`
+         } else {
+            res.data.avatar = '../assets/images/avatar-login.svg'
+         }
          this.updateAuthUser(res.data)
       })
    }

@@ -37,6 +37,8 @@ apiAxios.interceptors.response.use(undefined, (error) => {
 })
 
 export default {
+    /*=====Auth=====*/
+    //Đăng ký
     register(data) {
         return apiAxios({
             method: 'post',
@@ -44,6 +46,7 @@ export default {
             data: data
         })
     },
+    //Đăng nhập
     login(data) {
         return apiAxios({
             method: 'post',
@@ -51,12 +54,26 @@ export default {
             data: data
         })
     },
+    //Đăng xuất
+    logout() {
+        return apiAxios({
+            method: 'post',
+            url: '/auth/logout',
+        })
+    },
+    //Lấy thông tin người dùng
     getAuthUser() {
         return apiAxios({
             method: 'get',
             url: '/auth/me',
         })
     },
+    /*==========*/
+
+
+
+    /*=====Người dùng=====*/
+    //Thay đổi thông tin người dùng
     updateUserInfo(data) {
         return apiAxios({
             method: 'post',
@@ -64,11 +81,155 @@ export default {
             data: data
         })
     },
+    //Thay đổi mật khẩu người dùng
     updateUserPassword(data) {
         return apiAxios({
             method: 'put',
             url: '/users/password',
             data: data
         })
-    }
+    },
+    /*==========*/
+
+
+
+    /*=====Danh sách=====*/
+    //Lấy danh mục công việc
+    getListDirectory() {
+        return apiAxios({
+            method: 'get',
+            url: '/directories',
+        })
+    },
+    //Tạo danh mục công việc
+    createDirectory(data) {
+        return apiAxios({
+            method: 'post',
+            url: '/directories',
+            data: data
+        })
+    },
+    //Thay đổi thông tin danh mục công việc
+    updateDirectory(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/directories/${id}`,
+            data: data
+        })
+    },
+    //Xóa danh mục công việc
+    deleteDirectory(id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/directories/${id}`,
+        })
+    },
+    //Thay đổi vị trí danh mục công việc
+    changeIndexDirectory(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/directories/${id}/index`,
+            data: data
+        })
+    },
+    /*==========*/
+
+
+
+    /*=====Thẻ=====*/
+    //Tạo thẻ
+    createCard(data) {
+        return apiAxios({
+            method: 'post',
+            url: '/cards',
+            data: data
+        })
+    },
+    //Thay đổi thông tin thẻ
+    updateCard(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/cards/${id}`,
+            data: data
+        })
+    },
+    //Xóa thẻ
+    deleteCard(id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/cards/${id}`,
+        })
+    },
+    //Thay đổi vị trí thẻ giữa các danh mục
+    changeIndexCardDirectory(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/cards/${id}/index`,
+            data: data
+        })
+    },
+    //Thay đổi vị trí thẻ
+    changeIndexCard(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/cards/${id}/index`,
+            data: data
+        })
+    },
+    //Lấy thông tin thẻ
+    getCardDetail(id) {
+        return apiAxios({
+            method: 'get',
+            url: `/cards/${id}`,
+        })
+    },
+    //Thêm file cho thẻ
+    createFileCard(data, id) {
+        return apiAxios({
+            method: 'post',
+            url: `/cards/${id}/upload-file`,
+            data: data
+        })
+    },
+    //Thay đổi trạng thái cho thẻ
+    changeStatusCard(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/cards/${id}/change-status`,
+            data: data
+        })
+    },
+    //Thay đổi deadline của thẻ
+    changeDeadlineCard(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/cards/${id}/change-status-deadline`,
+            data: data
+        })
+    },
+    //Gắn nhãn có sẵn cho thẻ
+    addTagAlreadyToCard(data, id) {
+        return apiAxios({
+            method: 'post',
+            url: `/cards/${id}/attach-labels`,
+            data: data
+        })
+    },
+    //Gỡ nhãn khỏi nhẻ
+    deleteTag(data, id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/cards/${id}/detach-labels`,
+            data: data
+        })
+    },
+    //Thêm nhãn mới và gắn nhãn cho thẻ
+    createAndAddTag(data, id) {
+        return apiAxios({
+            method: 'post',
+            url: `/cards/${id}/label`,
+            data: data
+        })
+    },
+    /*==========*/
 }

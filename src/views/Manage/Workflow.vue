@@ -1,16 +1,16 @@
 <template>
    <div class="workflow-wrap">
-      <draggable class="list-group" tag="ul" v-model="workflow" v-bind="dragOptions"
-                 @start="drag = true" @end="drag = false">
+      <draggable class="list-group" tag="ul" v-model="workflow" v-bind="dragOptions" :disabled="!enabled"
+                 @start="drag = true" @end="drag = false" @change="changeIndexDirectory">
          <transition-group class="draggable-transition" type="transition" :name="!drag ? 'flip-list' : null">
             <div class="list-group-item" v-for="(work, workIndex) in workflow" :key="workIndex">
                <div class="section">
                   <div class="section-box-header">
-                     <div class="section-title" @click="work.isRenameWork= false">
+                     <div class="section-title" @click="showRename(workIndex)">
                         <span v-if="work.isRenameWork">{{ work.title }}</span>
                         <div class="box-scp" v-else>
                            <input type="text" class="css-rename" v-focus v-model="work.title"
-                                  @keypress.enter="renameWork()" @blur="resetRenameWork()">
+                                  @keypress.enter="renameWork(work.id, work.title)" @blur="renameWork(work.id, work.title)">
                            <span></span>
                         </div>
                      </div>
@@ -18,7 +18,7 @@
                         <div class="section-action-box" @click="showNewCard(workIndex)">
                            <i class="el-icon-plus section-action-icon"></i>
                         </div>
-                        <div class="section-action-box" @click="handleDeleteList(workIndex, work.title)">
+                        <div class="section-action-box" @click="handleDeleteList(work.id, work.title)">
                            <i class="el-icon-delete section-action-icon"></i>
                         </div>
                      </div>
@@ -30,15 +30,16 @@
                            <div class="task-name">
                               <div class="box-scp">
                                  <input type="text" placeholder="Nhập tên thẻ" v-focus
-                                        v-model="newCard" @keypress.enter="addNewCard()" @blur="addNewCard()">
+                                        v-model="newCard" @keypress.enter="handleCreateCard(workIndex)" @blur="handleCreateCard(workIndex)">
                                  <span></span>
                               </div>
                            </div>
                         </div>
                      </div>
-                     <draggable class="task-group section-box-content" :list="work.cards" group="task" @change="log">
+                     <draggable class="task-group section-box-content" :list="work.cards" group="task"
+                                @change="changeIndexCard">
                         <div class="task_group_item content_task" v-for="(card) in work.cards" :key="card.id"
-                             @click="detailCard(card)">
+                             @click="detailCard(card.id)">
                            <!--                        <el-image :src="taskItem.file[0].name" v-if="taskIndex===0"></el-image>-->
                            <div class="task-info">
                               <div class="task-name">{{ card.title }}</div>
@@ -52,7 +53,7 @@
                                  <div class="deadline">
                                     <i class="el-icon-date date-picker deadline-picker"></i>
                                     <span class="deadline-info" v-if="card.deadline && card.deadline.length > 0">
-                                    {{ card.deadline }}
+                                    {{ formatDate(card.deadline) }}
                                  </span>
                                     <span class="deadline-info" v-else>Đang cập nhật</span>
                                  </div>
@@ -88,7 +89,7 @@
 
       <div :class="{card_detail_wrap:true, animate__animated: true,
                     animate__fadeInDownBig: isShow, animate__fadeOutUpBig: isDsNone}">
-         <TaskDetail/>
+         <TaskDetail @change="getAllData()"/>
       </div>
    </div>
 </template>
@@ -98,6 +99,8 @@ import {mapState, mapMutations} from 'vuex'
 import draggable from "vuedraggable";
 import 'animate.css';
 import TaskDetail from "../../components/TaskDetail";
+import api from '../../api'
+import moment from 'moment';
 
 export default {
    name: "Workflow",
@@ -107,707 +110,14 @@ export default {
    },
    data() {
       return {
+         enabled: true,
          newWork: '',
          isNewWork: true,
          newCard: '',
-         workflow: [
-            {
-               id: 1,
-               title: "Mới",
-               user_id: 1,
-               index: 1,
-               created_at: null,
-               updated_at: null,
-               cards: [
-                  {
-                     id: 1,
-                     title: "Đánh răng",
-                     description: "Đánh răng",
-                     status: 1,
-                     directory_id: 1,
-                     index: 1,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 1,
-                           name: "hungle",
-                           color: "red",
-                           user_id: 1,
-                           created_at: "2021-01-25T08:20:54.000000Z",
-                           updated_at: "2021-01-25T08:20:54.000000Z",
-                           pivot: {
-                              card_id: 1,
-                              label_id: 1,
-                              created_at: "2021-01-25T08:20:54.000000Z",
-                              updated_at: "2021-01-25T08:20:54.000000Z"
-                           }
-                        },
-                        {
-                           id: 2,
-                           name: "hungle",
-                           color: "red",
-                           user_id: 1,
-                           created_at: "2021-01-25T08:23:53.000000Z",
-                           updated_at: "2021-01-25T08:23:53.000000Z",
-                           pivot: {
-                              card_id: 1,
-                              label_id: 2,
-                              created_at: "2021-01-25T08:23:53.000000Z",
-                              updated_at: "2021-01-25T08:23:53.000000Z"
-                           }
-                        },
-                        {
-                           id: 3,
-                           name: "hungle",
-                           color: "red",
-                           user_id: 1,
-                           created_at: "2021-01-25T08:26:42.000000Z",
-                           updated_at: "2021-01-25T08:26:42.000000Z",
-                           pivot: {
-                              card_id: 1,
-                              label_id: 3,
-                              created_at: "2021-01-25T08:26:42.000000Z",
-                              updated_at: "2021-01-25T08:26:42.000000Z"
-                           }
-                        }
-                     ]
-                  },
-                  {
-                     id: 2,
-                     title: "Rửa mặt",
-                     description: "Rửa mặt",
-                     status: 1,
-                     directory_id: 1,
-                     index: 2,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 7,
-                           name: "MIT-Zent",
-                           color: "green",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 2,
-                              label_id: 7,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 8,
-                           name: "DTT-Zent",
-                           color: "green",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 2,
-                              label_id: 8,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 9,
-                           name: "DTT1-Zent",
-                           color: "green",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 2,
-                              label_id: 9,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        }
-                     ]
-                  }
-               ],
-               isRenameWork: true,
-               isNewCard: true
-            },
-            {
-               id: 2,
-               title: "Đang làm",
-               user_id: 1,
-               index: 2,
-               created_at: null,
-               updated_at: null,
-               cards: [
-                  {
-                     id: 3,
-                     title: "Ăn sáng",
-                     description: "Ăn sáng",
-                     status: 1,
-                     directory_id: 2,
-                     index: 3,
-                     deadline: '12/05 đến 22/10',
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 10,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 3,
-                              label_id: 10,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 11,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 3,
-                              label_id: 11,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 12,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 3,
-                              label_id: 12,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 13,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 3,
-                              label_id: 13,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        }
-                     ]
-                  },
-                  {
-                     id: 4,
-                     title: "Nấu cơm",
-                     description: "Nấu cơm",
-                     status: 1,
-                     directory_id: 2,
-                     index: 4,
-                     deadline: '12/05 đến 22/10',
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 14,
-                           name: "MISS-Zent",
-                           color: "#409eff",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 4,
-                              label_id: 14,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 15,
-                           name: "MISS-Zent",
-                           color: "red",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 4,
-                              label_id: 15,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 16,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 4,
-                              label_id: 16,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 17,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 4,
-                              label_id: 17,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        }
-                     ]
-                  },
-                  {
-                     id: 5,
-                     title: "Rửa bát",
-                     description: "Rửa bát",
-                     status: 1,
-                     directory_id: 2,
-                     index: 5,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 18,
-                           name: "MISS-Zent",
-                           color: "green",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 5,
-                              label_id: 18,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 19,
-                           name: "MISS-Zent",
-                           color: "red",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 5,
-                              label_id: 19,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 20,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 5,
-                              label_id: 20,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 21,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 5,
-                              label_id: 21,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        }
-                     ]
-                  },
-                  {
-                     id: 6,
-                     title: "Làm việc",
-                     description: "Làm việc",
-                     status: 1,
-                     directory_id: 2,
-                     index: 6,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 22,
-                           name: "MISS-Zent",
-                           color: "green",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 6,
-                              label_id: 22,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 23,
-                           name: "MISS-Zent",
-                           color: "red",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 6,
-                              label_id: 23,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                     ]
-                  },
-                  {
-                     id: 7,
-                     title: "Đám cưới",
-                     description: "Đám cưới",
-                     status: 1,
-                     directory_id: 2,
-                     index: 7,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 24,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 7,
-                              label_id: 24,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 25,
-                           name: "MISS-Zent",
-                           color: "red",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 7,
-                              label_id: 25,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                     ]
-                  },
-                  {
-                     id: 8,
-                     title: "Tiết kiệm",
-                     description: "Tiết kiệm",
-                     status: 1,
-                     directory_id: 2,
-                     index: 8,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 26,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 8,
-                              label_id: 26,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                     ]
-                  },
-                  {
-                     id: 9,
-                     title: "Du lịch",
-                     description: "Du lịch",
-                     status: 1,
-                     directory_id: 2,
-                     index: 9,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 27,
-                           name: "MISS-Zent",
-                           color: "red",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 9,
-                              label_id: 27,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 28,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 9,
-                              label_id: 28,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 30,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 9,
-                              label_id: 30,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                     ]
-                  },
-                  {
-                     id: 10,
-                     title: "Mua quần áo",
-                     description: "Mua quần áo",
-                     status: 1,
-                     directory_id: 2,
-                     index: 10,
-                     deadline: '12/05 đến 22/10',
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 31,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 10,
-                              label_id: 31,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 32,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 10,
-                              label_id: 32,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 33,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 10,
-                              label_id: 33,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 34,
-                           name: "MISS-Zent",
-                           color: "gray",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 10,
-                              label_id: 34,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        }
-                     ]
-                  },
-               ],
-               isRenameWork: true,
-               isNewCard: true
-            },
-            {
-               id: 3,
-               title: "Đã hoàn thành",
-               user_id: 1,
-               index: 3,
-               created_at: null,
-               updated_at: null,
-               cards: [
-                  {
-                     id: 11,
-                     title: "Mua mai thúy",
-                     description: "Mua mai thúy",
-                     status: 1,
-                     directory_id: 1,
-                     index: 11,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 35,
-                           name: "hungle",
-                           color: "red",
-                           user_id: 1,
-                           created_at: "2021-01-25T08:20:54.000000Z",
-                           updated_at: "2021-01-25T08:20:54.000000Z",
-                           pivot: {
-                              card_id: 11,
-                              label_id: 35,
-                              created_at: "2021-01-25T08:20:54.000000Z",
-                              updated_at: "2021-01-25T08:20:54.000000Z"
-                           }
-                        },
-                        {
-                           id: 36,
-                           name: "hungle",
-                           color: "red",
-                           user_id: 1,
-                           created_at: "2021-01-25T08:23:53.000000Z",
-                           updated_at: "2021-01-25T08:23:53.000000Z",
-                           pivot: {
-                              card_id: 11,
-                              label_id: 36,
-                              created_at: "2021-01-25T08:23:53.000000Z",
-                              updated_at: "2021-01-25T08:23:53.000000Z"
-                           }
-                        },
-                        {
-                           id: 37,
-                           name: "hungle",
-                           color: "red",
-                           user_id: 1,
-                           created_at: "2021-01-25T08:26:42.000000Z",
-                           updated_at: "2021-01-25T08:26:42.000000Z",
-                           pivot: {
-                              card_id: 11,
-                              label_id: 37,
-                              created_at: "2021-01-25T08:26:42.000000Z",
-                              updated_at: "2021-01-25T08:26:42.000000Z"
-                           }
-                        }
-                     ]
-                  },
-                  {
-                     id: 12,
-                     title: "Buôn lậu",
-                     description: "Buôn lậu",
-                     status: 1,
-                     directory_id: 1,
-                     index: 12,
-                     deadline: null,
-                     user_id: 1,
-                     created_at: null,
-                     updated_at: null,
-                     labels: [
-                        {
-                           id: 38,
-                           name: "MIT-Zent",
-                           color: "green",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 12,
-                              label_id: 38,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                        {
-                           id: 8,
-                           name: "DTT-Zent",
-                           color: "green",
-                           user_id: 1,
-                           created_at: null,
-                           updated_at: null,
-                           pivot: {
-                              card_id: 2,
-                              label_id: 8,
-                              created_at: null,
-                              updated_at: null
-                           }
-                        },
-                     ]
-                  }
-               ],
-               isRenameWork: true,
-               isNewCard: true
-            },
-         ],
+         workflow: '',
          drag: false,
          dialogTableVisible: false,
+         test: ''
 
       };
    },
@@ -815,7 +125,7 @@ export default {
       ...mapState('workflow', [
          'isShow',
          'isDsNone',
-         'card'
+         'cardId'
       ]),
       dragOptions() {
          return {
@@ -830,8 +140,28 @@ export default {
       ...mapMutations('workflow', [
          'updateIsShow',
          'updateIsDsNone',
-         'updateCard'
+         'updateCardId'
       ]),
+      refreshData() {
+         this.workflow.push([])
+         this.workflow.pop()
+      },
+      getAllData() {
+         api.getListDirectory().then(res => {
+            this.workflow = res.data.data
+            this.workflow.forEach((el) => {
+               el.isRenameWork = true
+               el.isNewCard = true
+            })
+
+            this.refreshData()
+         })
+      },
+      showRename(index) {
+         this.workflow[index].isRenameWork = false
+         this.refreshData()
+
+      },
       showNewWork() {
          this.isNewWork = false
          this.workflow.forEach((el) => {
@@ -843,8 +173,20 @@ export default {
          this.newWork = ''
       },
       addNewWork() {
-         this.isNewWork = true
-         this.newWork = ''
+         let index = 1;
+         (this.workflow.length > 0) ? index = this.workflow.length : ''
+         api.createDirectory({
+            title: this.newWork,
+            index: index
+         }).then(() => {
+            this.getAllData()
+         }).catch(() => {
+            this.$notify.error({
+               title: 'Hệ thống',
+               message: 'Thêm danh sách thất bại'
+            });
+         })
+         this.resetNewWork()
       },
       showNewCard(value) {
          this.newCard = ''
@@ -854,6 +196,7 @@ export default {
                el.isNewCard = false
             }
          })
+         this.refreshData()
 
          this.isNewWork = true
       },
@@ -865,21 +208,26 @@ export default {
       },
       detailCard(value) {
          this.updateIsShow(true)
-         this.updateCard(JSON.parse(JSON.stringify(value)))
+         this.updateCardId(JSON.parse(JSON.stringify(value)))
       },
-      handleDeleteList(index, name) {
+      handleDeleteList(id, name) {
          this.$confirm(`Bạn có chắc chắn muốn xóa danh sách "${name}" hay không?`, 'Xóa danh sách', {
             confirmButtonText: 'Xóa',
             cancelButtonText: 'Đóng',
             type: 'warning'
          }).then(() => {
-            this.$message({
-               type: 'success',
-               message: 'Xóa danh sách thành công'
-            });
+            api.deleteDirectory(id).then(() => {
+               this.getAllData()
+            }).catch(() => {
+               this.$notify.error({
+                  title: 'Hệ thống',
+                  message: 'Xóa danh sách thất bại'
+               });
+            })
+
          });
       },
-      log: function (evt) {
+      log(evt) {
          window.console.log(evt);
       },
       scrollEnd() {
@@ -887,14 +235,66 @@ export default {
             document.getElementById('todo').scrollIntoView()
          }, 100)
       },
-      renameWork() {
-         this.resetRenameWork()
+      renameWork(id, title) {
+         api.updateDirectory({
+            title: title
+         }, id).then(() => {
+            this.resetRenameWork()
+         }).catch(() => {
+            this.getAllData()
+            this.$notify.error({
+               title: 'Hệ thống',
+               message: 'Thay đổi thất bại'
+            });
+         })
       },
       resetRenameWork() {
          this.workflow.forEach((el) => {
             el.isRenameWork = true
          })
+         this.refreshData()
+      },
+      changeIndexDirectory(evt) {
+         // console.log(evt)
+         api.changeIndexDirectory({
+            index: evt.moved.newIndex
+         }, evt.moved.element.id).then(() => {
+            this.getAllData()
+         })
+      },
+      handleCreateCard(indexDirectory) {
+         let directory = this.workflow[indexDirectory]
+         let index = (directory.cards.length > 0) ? directory.cards.length : 0
+         api.createCard({
+            title: this.newCard,
+            index: index,
+            directory_id: directory.id
+         }).then(() => {
+
+         })
+
+         this.workflow.forEach((el) => {
+            el.isNewCard = true
+         })
+
+         this.newCard = ''
+         this.getAllData()
+      },
+      changeIndexCard(evt) {
+         // window.console.log(evt);
+         api.changeIndexCard({
+            index: evt.moved.newIndex
+         }, evt.moved.element.id).then(() => {
+            this.getAllData()
+         })
+      },
+      formatDate(value) {
+         return moment(value).format('DD-MM-YYYY')
       }
+      // checkMove: function(evt){
+      //    window.console.log(evt);
+      //    // return (evt.draggedContext.element.name!=='apple');
+      // }
    },
    directives: {
       focus: {
@@ -903,9 +303,9 @@ export default {
          }
       }
    },
-   // mounted() {
-   //    this.scrollEnd()
-   // },
+   mounted() {
+      this.getAllData()
+   },
    watch: {
       isShow(value) {
          this.updateIsDsNone(!value)

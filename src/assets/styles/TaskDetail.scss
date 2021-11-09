@@ -102,6 +102,12 @@
             .time-span {
                font-size: 15px;
                margin-left: 10px;
+
+               i {
+                  font-weight: bold;
+                  margin-left: 15px;
+                  cursor: pointer;
+               }
             }
 
             .pill-wrap {
