@@ -114,7 +114,7 @@ export default {
          newWork: '',
          isNewWork: true,
          newCard: '',
-         workflow: '',
+         workflow: [],
          drag: false,
          dialogTableVisible: false,
          test: ''
@@ -153,14 +153,12 @@ export default {
                el.isRenameWork = true
                el.isNewCard = true
             })
-
             this.refreshData()
          })
       },
       showRename(index) {
          this.workflow[index].isRenameWork = false
          this.refreshData()
-
       },
       showNewWork() {
          this.isNewWork = false
@@ -263,22 +261,25 @@ export default {
          })
       },
       handleCreateCard(indexDirectory) {
-         let directory = this.workflow[indexDirectory]
-         let index = (directory.cards.length > 0) ? directory.cards.length : 0
-         api.createCard({
-            title: this.newCard,
-            index: index,
-            directory_id: directory.id
-         }).then(() => {
-
-         })
-
-         this.workflow.forEach((el) => {
-            el.isNewCard = true
-         })
-
-         this.newCard = ''
-         this.getAllData()
+         if (this.newCard !== '') {
+            let directory = this.workflow[indexDirectory]
+            let index = (directory.cards.length > 0) ? directory.cards.length : 0
+            api.createCard({
+               title: this.newCard,
+               index: index,
+               directory_id: directory.id
+            }).then(() => {
+               this.newCard = ''
+               this.getAllData()
+               this.$message({
+                  message: 'Tạo thẻ thành công.',
+                  type: 'success'
+               });
+            })
+         } else {
+            this.workflow[indexDirectory].isNewCard = true
+            this.refreshData()
+         }
       },
       changeIndexCard(evt) {
          // window.console.log(evt);

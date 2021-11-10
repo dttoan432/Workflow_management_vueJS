@@ -6,6 +6,11 @@
                    v-model="card.title" @blur="handleUpdateCard()">
          </div>
          <div class="card-utilities">
+            <el-tooltip class="item" effect="dark" content="Đánh dấu hoàn thành" placement="bottom"
+                        v-if="card.deadline">
+               <i class="el-icon-check card-attach-item" @click="closeCard()"
+                  v-if="card.deadline"></i>
+            </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Đính kèm" placement="bottom">
                <el-upload
                    class="upload-demo"
@@ -19,13 +24,15 @@
                    placement="bottom"
                    title="Thêm việc cần làm"
                    width="200"
-                   trigger="click">
+                   trigger="click"
+                   v-model="visibleCheckList">
                   <i class="el-icon-star-off card-attach-item" slot="reference"></i>
                   <div class="box-scp">
-                     <input type="text" placeholder="Nhập tên công việc" v-focus>
+                     <input type="text" placeholder="Nhập tên công việc" v-focus v-model="newCheckList">
                      <span></span>
                   </div>
-                  <el-button type="primary" plain size="mini" class="scp-001">Thêm</el-button>
+                  <el-button type="primary" plain size="mini" class="scp-001" @click="handleCreateCheckList()">Thêm
+                  </el-button>
                </el-popover>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Xóa thẻ" placement="bottom">
@@ -45,12 +52,11 @@
             <div class="right-box">
                <i class="el-icon-date" @click="showDatePicker()"></i>
                <el-date-picker class="deadline-item" ref="openDatePicker" size="mini" type="date" align="right"
-                               v-model="deadline" @change="getDate()">
+                               v-model="deadline" @change="changeDeadline()">
                </el-date-picker>
-<!--               <span class="time-span">{{ deadline }}</span>-->
                <span class="time-span" v-if="deadlineDisplay.length > 0">
                   {{ deadlineDisplay }}
-                  <i class="el-icon-close" @click="getDate(false)"></i>
+                  <i class="el-icon-close" @click="changeDeadline(false)"></i>
                </span>
                <span class="time-span" v-else>Đang cập nhật</span>
             </div>
@@ -88,22 +94,23 @@
             </div>
          </div>
          <div class="todo-wrap">
-            <div class="todo-box" v-for="(element, index) in listTodo" :key="element.id">
+            <div class="todo-box" v-for="(element, index) in card.check_lists" :key="element.id">
                <div class="todo-parent">
                   <div class="todo-parent-title">
                      <i class="el-icon-star-off ico-scp">
-                        <input type="text" v-model="element.title">
+                        <input type="text" v-model="element.title" @blur="handleUpdateCheckList(index)">
                         <span></span>
                      </i>
-                     <div class="todo-parent-action" @click="handleDeleteChildren(element.title)">Xóa</div>
+                     <div class="todo-parent-action" @click="handleDeleteCheckList(element.title, element.id)">Xóa</div>
                   </div>
-                  <el-progress :percentage="handleCalculatePercent(element)" color="#409eff"></el-progress>
+                  <el-progress :percentage="handleCalculatePercent(element)" color="#409eff"
+                               v-if="element.check_list_childs.length > 0"></el-progress>
                </div>
                <div class="todo-children">
-                  <el-checkbox class="todo-children-checkbox" v-for="item in element.children"
-                               :key="item.id" :checked="item.status">
+                  <el-checkbox class="todo-children-checkbox" v-for="item in element.check_list_childs"
+                               :key="item.id" :checked="item.status === 1" @change="changeStatusCheckListChild(item.id, $event)">
                      <div class="checkbox-action">
-                        <div>{{ item.name }}</div>
+                        <div>{{ item.title }}</div>
                         <div class="checkbox-action-icon">
                            <i class="el-icon-edit"></i>
                            <i class="el-icon-close"></i>
@@ -124,14 +131,14 @@
                           animate__fadeOutDown: element.show}">
                         <el-button-group class="btn-oop">
                            <el-button type="primary" icon="el-icon-check" plain size="mini"
-                                      @click="toggleNewChildren(index, element.show)">
+                                      @click="handleCreateCheckListChild(element.id)">
                            </el-button>
                            <el-button type="primary" icon="el-icon-close" plain size="mini"
                                       @click="toggleNewChildren(index, element.show)">
                            </el-button>
                         </el-button-group>
                         <input type="text" class="new-name-children" placeholder="Tên công việc con"
-                               v-model="children" v-focus>
+                               v-model="newCheckListChild" v-focus>
                      </div>
                   </div>
                </div>
@@ -168,14 +175,11 @@ export default {
       ]),
    },
    mounted() {
-      if (this.cardId !== '') {
-         api.getCardDetail(this.cardId).then((res) => {
-            console.log(res.data)
-         })
-      }
+      this.getData()
    },
    data() {
       return {
+         visibleCheckList: false,
          fileList: [{
             name: 'food.jpeg',
             url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
@@ -212,15 +216,36 @@ export default {
             },
          ],
          children: '',
-         card: ''
+         card: '',
+         newCheckList: '',
+         newCheckListChild: '',
       }
    },
    methods: {
       ...mapMutations('workflow', [
          'updateIsShow',
          'updateIsDsNone',
-         'updateCard'
+         'updateCardId'
       ]),
+      refreshData() {
+         this.newCheckList = ''
+         this.newCheckListChild = ''
+      },
+      getData() {
+         if (this.cardId !== '') {
+            api.getCardDetail(this.cardId).then((res) => {
+               this.card = res.data.data
+               this.deadlineDisplay = ''
+               if (this.card.deadline !== null) {
+                  this.deadlineDisplay = moment(this.card.deadline).format('DD-MM-YYYY')
+               }
+               this.card.check_lists.forEach((el) => {
+                  el.hide = false
+                  el.show = true
+               })
+            })
+         }
+      },
       closeCard() {
          this.updateIsShow(false)
          this.updateIsDsNone(true)
@@ -228,7 +253,7 @@ export default {
       showDatePicker() {
          this.$refs.openDatePicker.showPicker()
       },
-      getDate(value = true) {
+      changeDeadline(value = true) {
          let date = null
          this.deadlineDisplay = ''
          if (value) {
@@ -239,9 +264,10 @@ export default {
             deadline: date
          }, this.card.id).then(() => {
             this.$message({
-               message: 'Congrats, this is a success message.',
+               message: 'Thay đổi deadline thành công.',
                type: 'success'
             });
+            this.getData()
             this.$emit('change', 1)
          })
       },
@@ -273,25 +299,97 @@ export default {
             })
          });
       },
-      handleCalculatePercent(value) {
-         let percent = _.filter(value.children, {'status': true}).length / value.children.length * 100
-         return percent
+      handleCreateCheckList() {
+         if (this.newCheckList !== '') {
+            api.createCheckList({
+               title: this.newCheckList,
+               card_id: this.card.id
+            }).then(() => {
+               this.$message({
+                  message: 'Thêm việc cần làm thành công.',
+                  type: 'success'
+               });
+               this.visibleCheckList = false
+               this.refreshData()
+               this.getData()
+               this.$emit('change', 1)
+            })
+         }
       },
-      toggleNewChildren(index, bool) {
-         this.listTodo[index].show = !bool
-         this.listTodo[index].hide = bool
+      handleUpdateCheckList(index) {
+         let data = this.card.check_lists[index]
+         if (data.title !== '') {
+            api.updateCheckList({
+               title: data.title,
+            }, data.id).then(() => {
+               this.$message({
+                  message: 'Cập nhật việc cần làm thành công.',
+                  type: 'success'
+               });
+               this.refreshData()
+               this.getData()
+            })
+         }
       },
-      handleDeleteChildren(name) {
+      handleDeleteCheckList(name, id) {
          this.$confirm(`Bạn có chắc chắn muốn xóa "${name}" hay không?`, 'Xóa việc cần làm', {
             confirmButtonText: 'Xóa',
             cancelButtonText: 'Đóng',
             type: 'warning'
          }).then(() => {
-            this.$message({
-               type: 'success',
-               message: 'Xóa thành công'
-            });
+            api.deleteCheckList(id).then(() => {
+               this.$message({
+                  message: 'Xóa việc cần làm thành công.',
+                  type: 'success'
+               });
+               this.refreshData()
+               this.getData()
+            })
          });
+      },
+      handleCreateCheckListChild(checkListId) {
+         if (this.newCheckListChild !== '') {
+            api.createCheckListChild({
+               title: this.newCheckListChild,
+               check_list_id: checkListId
+            }).then(() => {
+               this.$message({
+                  message: 'Thêm việc cần con làm thành công.',
+                  type: 'success'
+               });
+               this.refreshData()
+               this.getData()
+               this.$emit('change', 1)
+            })
+         }
+      },
+      changeStatusCheckListChild(id, event) {
+         console.log(event)
+         let status = 0
+         if (event) {
+            status = 1
+         }
+         api.updateStatusCheckListChild({
+            status: status
+         }, id).then(() => {
+            this.$message({
+               message: 'Thay đổi trạng thái công việc con làm thành công.',
+               type: 'success'
+            });
+            this.refreshData()
+            this.getData()
+            this.$emit('change', 1)
+         })
+      },
+      handleCalculatePercent(value) {
+         let percent = _.filter(value.check_list_childs, {'status': 1}).length / value.check_list_childs.length * 100
+         return Math.round(percent)
+      },
+      toggleNewChildren(index, bool) {
+         this.card.check_lists[index].show = !bool
+         this.card.check_lists[index].hide = bool
+         this.card.check_lists.push([])
+         this.card.check_lists.pop()
       },
       beforeRemove(file) {
          return this.$confirm(`Cancel the transfert of ${file.name} ?`);
@@ -306,13 +404,8 @@ export default {
          this.hide = !value
       },
       cardId() {
-         api.getCardDetail(this.cardId).then((res) => {
-            this.card = res.data.data
-            this.deadlineDisplay = ''
-            if (this.card.deadline !== null) {
-               this.deadlineDisplay = moment(this.card.deadline).format('DD-MM-YYYY')
-            }
-         })
+         this.getData()
+         this.refreshData()
       },
    },
    directives: {

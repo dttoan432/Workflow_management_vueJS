@@ -93,15 +93,15 @@ export default {
 
 
 
-    /*=====Danh sách=====*/
-    //Lấy danh mục công việc
+    /*=====Danh mục=====*/
+    //Lấy danh mục
     getListDirectory() {
         return apiAxios({
             method: 'get',
             url: '/directories',
         })
     },
-    //Tạo danh mục công việc
+    //Tạo danh mục
     createDirectory(data) {
         return apiAxios({
             method: 'post',
@@ -109,7 +109,7 @@ export default {
             data: data
         })
     },
-    //Thay đổi thông tin danh mục công việc
+    //Thay đổi thông tin danh mục
     updateDirectory(data, id) {
         return apiAxios({
             method: 'put',
@@ -117,14 +117,14 @@ export default {
             data: data
         })
     },
-    //Xóa danh mục công việc
+    //Xóa danh mục
     deleteDirectory(id) {
         return apiAxios({
             method: 'delete',
             url: `/directories/${id}`,
         })
     },
-    //Thay đổi vị trí danh mục công việc
+    //Thay đổi vị trí danh mục
     changeIndexDirectory(data, id) {
         return apiAxios({
             method: 'put',
@@ -228,6 +228,70 @@ export default {
         return apiAxios({
             method: 'post',
             url: `/cards/${id}/label`,
+            data: data
+        })
+    },
+    /*==========*/
+
+
+
+    /*=====Công việc=====*/
+    //Tạo công việc
+    createCheckList(data) {
+        return apiAxios({
+            method: 'post',
+            url: '/check-lists',
+            data: data
+        })
+    },
+    //Thay đổi thông tin công việc
+    updateCheckList(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/check-lists/${id}`,
+            data: data
+        })
+    },
+    //Xóa công việc
+    deleteCheckList(id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/check-lists/${id}`,
+        })
+    },
+    /*==========*/
+
+
+
+    /*=====Công việc con=====*/
+    //Tạo công việc
+    createCheckListChild(data) {
+        return apiAxios({
+            method: 'post',
+            url: '/check-list-childs',
+            data: data
+        })
+    },
+    //Thay đổi thông tin công việc con
+    updateCheckListChild(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/check-list-childs/${id}`,
+            data: data
+        })
+    },
+    //Xóa công việc con
+    deleteCheckListChild(id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/check-list-childs/${id}`,
+        })
+    },
+    //Thay đổi trạng thái công việc con
+    updateStatusCheckListChild(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/check-list-childs/${id}/change-status`,
             data: data
         })
     },
