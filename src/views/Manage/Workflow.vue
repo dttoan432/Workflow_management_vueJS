@@ -10,7 +10,8 @@
                         <span v-if="work.isRenameWork">{{ work.title }}</span>
                         <div class="box-scp" v-else>
                            <input type="text" class="css-rename" v-focus v-model="work.title"
-                                  @keypress.enter="renameWork(work.id, work.title)" @blur="renameWork(work.id, work.title)">
+                                  @keypress.enter="renameWork(work.id, work.title)"
+                                  @blur="renameWork(work.id, work.title)">
                            <span></span>
                         </div>
                      </div>
@@ -30,7 +31,8 @@
                            <div class="task-name">
                               <div class="box-scp">
                                  <input type="text" placeholder="Nhập tên thẻ" v-focus
-                                        v-model="newCard" @keypress.enter="handleCreateCard(workIndex)" @blur="handleCreateCard(workIndex)">
+                                        v-model="newCard" @keypress.enter="handleCreateCard(workIndex)"
+                                        @blur="handleCreateCard(workIndex)">
                                  <span></span>
                               </div>
                            </div>
@@ -62,7 +64,8 @@
                                        <span class="todo-attach-item-info">0</span>
                                     </i>
                                     <i class="el-icon-star-off todo-attach-item">
-                                       <span class="todo-attach-item-info">0/0</span>
+                                       <span class="todo-attach-item-info">{{ card.list }}</span>
+                                       <!--                                       <span class="todo-attach-item-info" v-else>0</span>-->
                                     </i>
                                  </div>
                               </div>
@@ -86,11 +89,12 @@
             <span></span>
          </div>
       </div>
-
-      <div :class="{card_detail_wrap:true, animate__animated: true,
-                    animate__fadeInDownBig: isShow, animate__fadeOutUpBig: isDsNone}">
+      <el-drawer
+          :withHeader="false"
+          :visible.sync="drawer"
+          direction="rtl">
          <TaskDetail @change="getAllData()"/>
-      </div>
+      </el-drawer>
    </div>
 </template>
 
@@ -101,6 +105,7 @@ import 'animate.css';
 import TaskDetail from "../../components/TaskDetail";
 import api from '../../api'
 import moment from 'moment';
+import _ from 'lodash';
 
 export default {
    name: "Workflow",
@@ -110,6 +115,7 @@ export default {
    },
    data() {
       return {
+         drawer: false,
          enabled: true,
          newWork: '',
          isNewWork: true,
@@ -152,8 +158,29 @@ export default {
             this.workflow.forEach((el) => {
                el.isRenameWork = true
                el.isNewCard = true
+
+               el.cards.forEach((elm) => {
+                  let total = 0
+                  api.getCardDetail(elm.id).then((res) => {
+                     let data = res.data.data.check_lists
+                     let child = 0
+                     let childDone = 0
+                     if (data.length > 0) {
+                        data.forEach((elm) => {
+                           if (elm.check_list_childs.length > 0) {
+                              child += elm.check_list_childs.length
+                              childDone += _.filter(elm.check_list_childs, {'status': 1}).length;
+                              total = childDone + '/' + child
+                           }
+                        })
+                     }
+                     elm.list = total
+                  })
+               })
             })
-            this.refreshData()
+            setTimeout(() => {
+               this.refreshData()
+            }, 300)
          })
       },
       showRename(index) {
@@ -178,6 +205,7 @@ export default {
             index: index
          }).then(() => {
             this.getAllData()
+            this.scrollEnd()
          }).catch(() => {
             this.$notify.error({
                title: 'Hệ thống',
@@ -198,14 +226,8 @@ export default {
 
          this.isNewWork = true
       },
-      addNewCard() {
-         this.workflow.forEach((el) => {
-            el.isNewCard = true
-         })
-         this.newCard = ''
-      },
       detailCard(value) {
-         this.updateIsShow(true)
+         this.drawer = true
          this.updateCardId(JSON.parse(JSON.stringify(value)))
       },
       handleDeleteList(id, name) {
@@ -282,7 +304,7 @@ export default {
          }
       },
       changeIndexCard(evt) {
-         // window.console.log(evt);
+         window.console.log(evt);
          api.changeIndexCard({
             index: evt.moved.newIndex
          }, evt.moved.element.id).then(() => {
@@ -291,11 +313,30 @@ export default {
       },
       formatDate(value) {
          return moment(value).format('DD-MM-YYYY')
-      }
+      },
       // checkMove: function(evt){
       //    window.console.log(evt);
       //    // return (evt.draggedContext.element.name!=='apple');
       // }
+      countCheckList(id) {
+         let total = 0
+         api.getCardDetail(id).then((res) => {
+            let data = res.data.data.check_lists
+            let child = 0
+            let childDone = 0
+            if (data.length > 0) {
+               data.forEach((elm) => {
+                  if (elm.check_list_childs.length > 0) {
+                     child += elm.check_list_childs.length
+                     childDone += _.filter(elm.check_list_childs, {'status': 1}).length;
+                     total = childDone + '/' + child
+                  }
+               })
+            }
+         })
+         console.log(total)
+         return total
+      }
    },
    directives: {
       focus: {

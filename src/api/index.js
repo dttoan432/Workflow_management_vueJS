@@ -183,14 +183,6 @@ export default {
             url: `/cards/${id}`,
         })
     },
-    //Thêm file cho thẻ
-    createFileCard(data, id) {
-        return apiAxios({
-            method: 'post',
-            url: `/cards/${id}/upload-file`,
-            data: data
-        })
-    },
     //Thay đổi trạng thái cho thẻ
     changeStatusCard(data, id) {
         return apiAxios({
@@ -296,4 +288,30 @@ export default {
         })
     },
     /*==========*/
+
+
+    /*=====Files=====*/
+    //Thêm file
+    createFile(data, id) {
+        return apiAxios({
+            method: 'post',
+            url: `/cards/${id}/upload-file`,
+            data: data
+        })
+    },
+    //Cập nhật file
+    updateFile(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/files/${id}`,
+            data: data
+        })
+    },
+    //Xóa file
+    deleteFile(id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/files/${id}`,
+        })
+    },
 }
