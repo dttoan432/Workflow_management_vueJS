@@ -272,6 +272,7 @@
 
    .inp_new_children {
       display: flex;
+
       .el-button {
          margin-right: 10px;
       }
@@ -329,3 +330,108 @@
    margin-top: 10px;
    float: right;
 }
+
+
+.images-wrapper {
+   //display: flex;
+   align-items: center;
+   margin-top: 20px;
+   width: 100%;
+
+   .preview-file {
+      float: left;
+      margin-bottom: 15px;
+      max-width: 49.5%;
+
+      .document-file {
+         margin-right: 10px;
+         border: 1px solid #DCDFE6;
+         border-radius: 10px;
+         position: relative;
+         display: flex;
+         align-items: center;
+
+         .download-file {
+            //margin-right: 10px;
+
+            .image {
+               width: 100px;
+               height: 86px;
+               border: none;
+               border-top-left-radius: 10px;
+               border-bottom-left-radius: 10px;
+               background-size: cover;
+               cursor: pointer;
+            }
+
+            .ico-file {
+               width: 100px;
+               height: 86px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+
+               i {
+                  color: orange;
+                  font-size: 50px;
+               }
+            }
+
+         }
+
+         .info-file {
+            padding: 10px 10px;
+            .file-name {
+               font-weight: bold;
+               width: 185px;
+               overflow: hidden;
+               white-space: nowrap;
+               text-overflow: ellipsis;
+            }
+
+            .file-content {
+               .time-upload {
+                  font-size: 13px;
+                  margin: 5px 0;
+               }
+
+               .file-action {
+                  font-size: 13px;
+                  display: flex;
+                  color: #6f7782;
+
+                  a {
+                     color: #6f7782;
+                     text-decoration: unset;
+
+                     &:hover {
+                        color: #409EFF;
+                     }
+                  }
+
+                  span {
+                     margin: 0 2px 0 5px;
+                  }
+
+                  div {
+                     cursor: pointer;
+
+                     &:hover {
+                        color: #409EFF;
+                     }
+                  }
+
+
+               }
+            }
+         }
+      }
+   }
+
+}
+
+.gcc {
+   margin-top: 10px;
+   float: right;
+}
+

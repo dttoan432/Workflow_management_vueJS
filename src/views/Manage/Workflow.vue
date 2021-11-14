@@ -90,6 +90,7 @@
          </div>
       </div>
       <el-drawer
+          size="35%"
           :withHeader="false"
           :visible.sync="drawer"
           direction="rtl">

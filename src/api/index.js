@@ -199,30 +199,6 @@ export default {
             data: data
         })
     },
-    //Gắn nhãn có sẵn cho thẻ
-    addTagAlreadyToCard(data, id) {
-        return apiAxios({
-            method: 'post',
-            url: `/cards/${id}/attach-labels`,
-            data: data
-        })
-    },
-    //Gỡ nhãn khỏi nhẻ
-    deleteTag(data, id) {
-        return apiAxios({
-            method: 'delete',
-            url: `/cards/${id}/detach-labels`,
-            data: data
-        })
-    },
-    //Thêm nhãn mới và gắn nhãn cho thẻ
-    createAndAddTag(data, id) {
-        return apiAxios({
-            method: 'post',
-            url: `/cards/${id}/label`,
-            data: data
-        })
-    },
     /*==========*/
 
 
@@ -314,4 +290,56 @@ export default {
             url: `/files/${id}`,
         })
     },
+    /*==========*/
+
+
+
+    /*=====Nhãn=====*/
+    //Danh sách nhãn
+    getTag() {
+        return apiAxios({
+            method: 'get',
+            url: '/labels?q=normal',
+        })
+    },
+    //Cập nhật nhãn
+    updateTag(data, id) {
+        return apiAxios({
+            method: 'put',
+            url: `/labels/${id}`,
+            data: data
+        })
+    },
+    //Xóa nhãn
+    deleteTag(id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/labels/${id}`,
+        })
+    },
+    //Gắn nhãn có sẵn cho thẻ
+    addTagAlreadyToCard(data, id) {
+        return apiAxios({
+            method: 'post',
+            url: `/cards/${id}/attach-labels`,
+            data: data
+        })
+    },
+    //Gỡ nhãn khỏi nhẻ
+    detachTag(data, id) {
+        return apiAxios({
+            method: 'delete',
+            url: `/cards/${id}/detach-labels`,
+            data: data
+        })
+    },
+    //Thêm nhãn mới và gắn nhãn cho thẻ
+    createAndAddTag(data, id) {
+        return apiAxios({
+            method: 'post',
+            url: `/cards/${id}/label`,
+            data: data
+        })
+    },
+    /*==========*/
 }

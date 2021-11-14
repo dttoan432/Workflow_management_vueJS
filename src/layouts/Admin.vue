@@ -69,7 +69,7 @@ export default {
          if (res.data.avatar !== null) {
             res.data.avatar = `http://vuecourse.zent.edu.vn/storage/users/${res.data.avatar}`
          } else {
-            res.data.avatar = '../assets/images/avatar-login.svg'
+            res.data.avatar = '/img/avatar-login.d15a598a.svg'
          }
          this.updateAuthUser(res.data)
       })

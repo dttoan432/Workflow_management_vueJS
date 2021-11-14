@@ -130,8 +130,57 @@
             </div>
             <input type="file" class="attach-file" ref="upload" @change="upload">
             <el-button size="small" type="primary" @click="showUpload()">Đính kèm</el-button>
-            <div class="preview-file" v-for="(item) in card.files" :key="item.id">
-               {{ item.name }}
+
+            <CoolLightBox
+                :items="items"
+                :index="index"
+                @close="index = null">
+            </CoolLightBox>
+
+            <div class="images-wrapper">
+               <div class="preview-file" v-for="(file, fileIndex) in items" :key="fileIndex">
+                  <div class="document-file">
+                     <div class="download-file">
+                        <div v-if="handleCheckFile(file.thumb)"
+                             class="image"
+                             @click="index = fileIndex"
+                             :style="{ backgroundImage: 'url(' + file.thumb + ')' }">
+                        </div>
+                        <div class="ico-file" v-else>
+                           <i class="el-icon-document"></i>
+                        </div>
+                     </div>
+                     <div class="info-file">
+                        <div class="file-name">
+                           {{file.name}}
+                        </div>
+                        <div class="file-content">
+                           <div class="time-upload">
+                              {{formatDate(file.created_at)}}
+                           </div>
+                           <div class="file-action">
+                              <a :href="file.src" target="_blank" download="myimage">Tải xuống</a>
+                              <span>-</span>
+                              <el-popover
+                                  placement="bottom"
+                                  title="Sửa tệp"
+                                  width="300"
+                                  trigger="click"
+                                  v-model="file.toggle">
+                                 <div slot="reference">Sửa</div>
+                                 <el-input placeholder="" v-model="file.name"></el-input>
+                                 <el-button type="primary" size="small" class="gcc"
+                                            @click="handleRenameFile(file.name, file.id)">
+                                    Thay đổi
+                                 </el-button>
+                              </el-popover>
+                              <span>-</span>
+                              <div @click="handleDeleteFile(file.id)">Xóa</div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
@@ -146,11 +195,15 @@ import 'animate.css';
 // eslint-disable-next-line no-unused-vars
 import Tag from "./Tag";
 import api from "../api";
+import CoolLightBox from 'vue-cool-lightbox'
+import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 
 export default {
    name: "TaskDetail",
    components: {
-      Tag
+      Tag,
+      // eslint-disable-next-line vue/no-unused-components
+      CoolLightBox,
    },
    computed: {
       ...mapState('workflow', [
@@ -170,6 +223,20 @@ export default {
          card: '',
          newCheckList: '',
          newCheckListChild: '',
+         items: [
+            {
+               name: 'In nature, nothing is perfect and everything is perfect',
+               thumb: 'https://pdp.edu.vn/wp-content/uploads/2021/06/hinh-anh-galaxy-dep-chat.jpg',
+               src: 'https://pdp.edu.vn/wp-content/uploads/2021/06/hinh-anh-galaxy-dep-chat.jpg',
+            },
+         ],
+         index: null,
+         typeImage: [
+             'jpg',
+             'jpeg',
+             'png',
+             'PNG'
+         ]
       }
    },
    methods: {
@@ -194,6 +261,18 @@ export default {
                   el.show = true
                })
 
+               this.items = []
+               data.files.forEach((el) => {
+                  let data = {
+                     id: el.id,
+                     name: el.name,
+                     toggle: false,
+                     thumb: `http://vuecourse.zent.edu.vn/storage/${el.path}`,
+                     src: `http://vuecourse.zent.edu.vn/storage/${el.path}`,
+                     created_at: el.created_at
+                  }
+                  this.items.push(data)
+               })
                this.card = data
             })
          }
@@ -392,7 +471,52 @@ export default {
             this.getData()
             this.$emit('change', 1)
          })
-      }
+      },
+      handleCheckFile(name) {
+         let bool = false
+         let lastIndex = name.lastIndexOf('.')
+         let type = name.substring(lastIndex + 1)
+         this.typeImage.forEach((el) => {
+            if (el === type) {
+               bool = true
+            }
+         })
+
+         return bool
+      },
+      handleRenameFile(name, id) {
+         if (name !== '') {
+            api.updateFile({
+               name: name
+            }, id).then(() => {
+               this.$message({
+                  message: 'Rename thành công.',
+                  type: 'success'
+               });
+            })
+         }
+         this.getData()
+      },
+      handleDeleteFile(id) {
+         this.$confirm(`Bạn có chắc chắn muốn xóa hay không?`, 'Xóa tệp tin', {
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Đóng',
+            type: 'warning'
+         }).then(() => {
+            api.deleteFile(id).then(() => {
+               this.$message({
+                  type: 'success',
+                  message: 'Xóa tệp tin thành công'
+               });
+               this.getData()
+            }).catch(() => {
+               this.$message.error('Xóa tệp tin thất bại');
+            })
+         });
+      },
+      formatDate(value) {
+         return moment(value).format('HH:mm | DD-MM-YYYY')
+      },
    },
    watch: {
       // deadline(value) {
