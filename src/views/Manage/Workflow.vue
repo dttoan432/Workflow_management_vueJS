@@ -4,7 +4,7 @@
                  @start="drag = true" @end="drag = false" @change="changeIndexDirectory">
          <transition-group class="draggable-transition" type="transition" :name="!drag ? 'flip-list' : null">
             <div class="list-group-item" v-for="(work, workIndex) in workflow" :key="workIndex">
-               <div class="section">
+               <div class="section" :id="work.id">
                   <div class="section-box-header">
                      <div class="section-title" @click="showRename(workIndex)">
                         <span v-if="work.isRenameWork">{{ work.title }}</span>
@@ -39,16 +39,16 @@
                         </div>
                      </div>
                      <draggable class="task-group section-box-content" :list="work.cards" group="task"
-                                @change="changeIndexCard">
+                                :move="changeIndexCard">
                         <div class="task_group_item content_task" v-for="(card) in work.cards" :key="card.id"
                              @click="detailCard(card.id)">
-                           <!--                        <el-image :src="taskItem.file[0].name" v-if="taskIndex===0"></el-image>-->
+                           <el-image :src="card.image" v-if="card.image"></el-image>
                            <div class="task-info">
                               <div class="task-name">{{ card.title }}</div>
                               <div class="tag-list">
                               <span v-for="(label) in card.labels" :key="label.id"
                                     :style="{background: label.color}" class="tag-item">
-<!--                                 {{ label.name }}-->
+                                 {{ label.name }}
                               </span>
                               </div>
                               <div class="task-other-info">
@@ -60,8 +60,8 @@
                                     <span class="deadline-info" v-else>Đang cập nhật</span>
                                  </div>
                                  <div class="todo-attach">
-                                    <i class="el-icon-paperclip todo-attach-item">
-                                       <span class="todo-attach-item-info">0</span>
+                                    <i class="el-icon-paperclip todo-attach-item" v-if="card.files > 0">
+                                       <span class="todo-attach-item-info">{{ card.files }}</span>
                                     </i>
                                     <i class="el-icon-star-off todo-attach-item">
                                        <span class="todo-attach-item-info">{{ card.list }}</span>
@@ -124,6 +124,12 @@ export default {
          workflow: [],
          drag: false,
          dialogTableVisible: false,
+         typeImage: [
+            'jpg',
+            'jpeg',
+            'png',
+            'PNG'
+         ],
          test: ''
 
       };
@@ -163,11 +169,11 @@ export default {
                el.cards.forEach((elm) => {
                   let total = 0
                   api.getCardDetail(elm.id).then((res) => {
-                     let data = res.data.data.check_lists
+                     let data = res.data.data
                      let child = 0
                      let childDone = 0
-                     if (data.length > 0) {
-                        data.forEach((elm) => {
+                     if (data.check_lists.length > 0) {
+                        data.check_lists.forEach((elm) => {
                            if (elm.check_list_childs.length > 0) {
                               child += elm.check_list_childs.length
                               childDone += _.filter(elm.check_list_childs, {'status': 1}).length;
@@ -175,6 +181,27 @@ export default {
                            }
                         })
                      }
+                     let fileNumber = 0
+                     if (data.files.length > 0) {
+                        fileNumber = data.files.length
+                        for (let i = 0; i < fileNumber; i++) {
+                           if (this.handleCheckFile(data.files[i].path)) {
+                              elm.image = `http://vuecourse.zent.edu.vn/storage/${data.files[i].path}`
+                              break
+                           }
+                        }
+                        // data.files.forEach((el, index) => {
+                        //    console.log('vvvvv')
+                        //    if (index === 4) {
+                        //       return false
+                        //    }
+                        //    elm.image = this.handleCheckFile(el.path)
+                        //    console.log(el.image)
+                        //    this.handleCheckFile(el.path)
+                        // })
+
+                     }
+                     elm.files = fileNumber
                      elm.list = total
                   })
                })
@@ -304,13 +331,14 @@ export default {
             this.refreshData()
          }
       },
-      changeIndexCard(evt) {
-         window.console.log(evt);
-         api.changeIndexCard({
-            index: evt.moved.newIndex
-         }, evt.moved.element.id).then(() => {
-            this.getAllData()
-         })
+      changeIndexCard(e) {
+         let cardId = e.draggedContext.element.id
+         let index = e.draggedContext.futureIndex
+         let directoryId = e.to.parentElement.parentElement.getAttribute('id')
+         api.changeIndexCardDirectory({
+            index: index,
+            directory_id: directoryId
+         }, cardId)
       },
       formatDate(value) {
          return moment(value).format('DD-MM-YYYY')
@@ -319,25 +347,18 @@ export default {
       //    window.console.log(evt);
       //    // return (evt.draggedContext.element.name!=='apple');
       // }
-      countCheckList(id) {
-         let total = 0
-         api.getCardDetail(id).then((res) => {
-            let data = res.data.data.check_lists
-            let child = 0
-            let childDone = 0
-            if (data.length > 0) {
-               data.forEach((elm) => {
-                  if (elm.check_list_childs.length > 0) {
-                     child += elm.check_list_childs.length
-                     childDone += _.filter(elm.check_list_childs, {'status': 1}).length;
-                     total = childDone + '/' + child
-                  }
-               })
+      handleCheckFile(name) {
+         let bool = false
+         let lastIndex = name.lastIndexOf('.')
+         let type = name.substring(lastIndex + 1)
+         this.typeImage.forEach((el) => {
+            if (el === type) {
+               bool = true
             }
          })
-         console.log(total)
-         return total
-      }
+
+         return bool
+      },
    },
    directives: {
       focus: {

@@ -164,7 +164,7 @@ export default {
     changeIndexCardDirectory(data, id) {
         return apiAxios({
             method: 'put',
-            url: `/cards/${id}/index`,
+            url: `/cards/${id}/directory`,
             data: data
         })
     },
@@ -299,7 +299,15 @@ export default {
     getTag() {
         return apiAxios({
             method: 'get',
-            url: '/labels?q=normal',
+            url: '/labels',
+        })
+    },
+    //Thêm mới và gắn nhãn cho thẻ
+    createTag(data, id) {
+        return apiAxios({
+            method: 'post',
+            url: `/cards/${id}/label`,
+            data: data
         })
     },
     //Cập nhật nhãn
@@ -318,7 +326,7 @@ export default {
         })
     },
     //Gắn nhãn có sẵn cho thẻ
-    addTagAlreadyToCard(data, id) {
+    addTag(data, id) {
         return apiAxios({
             method: 'post',
             url: `/cards/${id}/attach-labels`,
@@ -333,13 +341,6 @@ export default {
             data: data
         })
     },
-    //Thêm nhãn mới và gắn nhãn cho thẻ
-    createAndAddTag(data, id) {
-        return apiAxios({
-            method: 'post',
-            url: `/cards/${id}/label`,
-            data: data
-        })
-    },
+
     /*==========*/
 }

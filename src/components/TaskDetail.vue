@@ -7,9 +7,9 @@
          </div>
          <div class="card-utilities">
             <el-tooltip class="item" effect="dark" content="Đánh dấu hoàn thành" placement="bottom"
-                        v-if="card.deadline">
-               <i class="el-icon-check card-attach-item" @click="closeCard()"
-                  v-if="card.deadline"></i>
+                        v-if="card.status !== 2">
+               <i class="el-icon-check card-attach-item" @click="handleComplete()"
+                  v-if="card.status !== 2"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Đính kèm" placement="bottom">
                <i class="el-icon-paperclip card-attach-item"  @change="upload"></i>
@@ -66,9 +66,9 @@
                   <div class="pill" v-for="item in card.labels" :key="item.id" :style="{background: item.color}">
                      {{ item.name }}
                   </div>
-                  <el-popover placement="bottom" width="400" trigger="click">
+                  <el-popover placement="bottom" width="320" trigger="click" @hide="resetCPNTag()">
                      <i slot="reference" class="el-icon-edit"></i>
-                     <Tag/>
+                     <Tag @changeColor="handleRefreshTag()" :resetTag="resetTag"/>
                   </el-popover>
                </div>
             </div>
@@ -236,7 +236,8 @@ export default {
              'jpeg',
              'png',
              'PNG'
-         ]
+         ],
+         resetTag: true
       }
    },
    methods: {
@@ -276,6 +277,12 @@ export default {
                this.card = data
             })
          }
+      },
+      handleRefreshTag(){
+         setTimeout(() => {
+            this.getData()
+            this.$emit('change', 1)
+         }, 500)
       },
       closeCard() {
          this.updateIsShow(false)
@@ -517,12 +524,24 @@ export default {
       formatDate(value) {
          return moment(value).format('HH:mm | DD-MM-YYYY')
       },
+      resetCPNTag(){
+         this.resetTag = !this.resetTag
+      },
+      handleComplete() {
+         api.changeStatusCard({
+            status: 2
+         }, this.cardId).then(() => {
+            this.$message({
+               type: 'success',
+               message: 'Hoàn thành'
+            });
+            this.getData()
+         }).catch(() => {
+            this.$message.error('Chưa hoàn thành');
+         })
+      }
    },
    watch: {
-      // deadline(value) {
-      //    let time = moment(value).format('DD-MM-YYYY')
-      //    this.deadline = time
-      // },
       show(value) {
          this.hide = !value
       },
