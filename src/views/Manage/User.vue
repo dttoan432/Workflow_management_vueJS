@@ -38,7 +38,7 @@
             </div>
 
             <div class="concat">
-               <span @click="convert()">{{ nameConvert }}</span>
+               <el-button type="primary" size="medium" @click="convert()" plain>{{ nameConvert }}</el-button>
                <el-button type="primary" size="medium" @click="handleUpdateUser()">Lưu</el-button>
             </div>
          </form>

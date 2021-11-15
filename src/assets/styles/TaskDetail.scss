@@ -105,8 +105,15 @@
 
                i {
                   font-weight: bold;
-                  margin-left: 15px;
+                  margin: 0 15px;
                   cursor: pointer;
+               }
+
+               b {
+                  border-radius: 5px;
+                  font-weight: unset;
+                  padding: 5px;
+                  color: white;
                }
             }
 
@@ -331,7 +338,6 @@
    float: right;
 }
 
-
 .images-wrapper {
    //display: flex;
    align-items: center;
@@ -433,5 +439,21 @@
 .gcc {
    margin-top: 10px;
    float: right;
+}
+
+.bg_primary {
+   background-color: #409EFF;
+}
+
+.bg_danger {
+   background-color: red;
+}
+
+.bg_success {
+   background-color: #67c23a;
+}
+
+.display_none {
+   display: none;
 }
 

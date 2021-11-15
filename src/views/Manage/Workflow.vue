@@ -41,31 +41,27 @@
                      <draggable class="task-group section-box-content" :list="work.cards" group="task"
                                 :move="changeIndexCard">
                         <div class="task_group_item content_task" v-for="(card) in work.cards" :key="card.id"
-                             @click="detailCard(card.id)">
+                             :id="`toCard${card.id}`" @click="detailCard(card.id)">
                            <el-image :src="card.image" v-if="card.image"></el-image>
                            <div class="task-info">
                               <div class="task-name">{{ card.title }}</div>
-                              <div class="tag-list">
+                              <div class="tag-list" v-if="card.labels.length > 0">
                               <span v-for="(label) in card.labels" :key="label.id"
                                     :style="{background: label.color}" class="tag-item">
                                  {{ label.name }}
                               </span>
                               </div>
                               <div class="task-other-info">
-                                 <div class="deadline">
+                                 <div class="deadline" v-if="card.deadline && card.deadline.length > 0">
                                     <i class="el-icon-date date-picker deadline-picker"></i>
-                                    <span class="deadline-info" v-if="card.deadline && card.deadline.length > 0">
-                                    {{ formatDate(card.deadline) }}
-                                 </span>
-                                    <span class="deadline-info" v-else>Đang cập nhật</span>
+                                    <span class="deadline-info">{{ formatDate(card.deadline) }}</span>
                                  </div>
-                                 <div class="todo-attach">
+                                 <div class="todo-attach" v-if="card.files > 0 || card.list !== 0">
                                     <i class="el-icon-paperclip todo-attach-item" v-if="card.files > 0">
                                        <span class="todo-attach-item-info">{{ card.files }}</span>
                                     </i>
-                                    <i class="el-icon-star-off todo-attach-item">
+                                    <i class="el-icon-star-off todo-attach-item" v-if="card.list !== 0">
                                        <span class="todo-attach-item-info">{{ card.list }}</span>
-                                       <!--                                       <span class="todo-attach-item-info" v-else>0</span>-->
                                     </i>
                                  </div>
                               </div>
@@ -83,10 +79,12 @@
             <i class="el-icon-plus add-card-icon"></i>
             Thêm danh sách
          </div>
-         <div class="box-scp" v-else>
-            <input type="text" placeholder="Nhập tên danh sách" class="css-rename" v-focus v-model="newWork"
-                   @keypress.enter="addNewWork()" @blur="resetNewWork()">
-            <span></span>
+         <div class="allb" v-else>
+            <div class="box-scp">
+               <input type="text" placeholder="Nhập tên danh sách" class="css-rename" v-focus v-model="newWork"
+                      @keypress.enter="addNewWork()" @blur="resetNewWork()">
+               <span></span>
+            </div>
          </div>
       </div>
       <el-drawer
@@ -94,7 +92,7 @@
           :withHeader="false"
           :visible.sync="drawer"
           direction="rtl">
-         <TaskDetail @change="getAllData()"/>
+         <TaskDetail @change="getAllData()" @close="drawer = false"/>
       </el-drawer>
    </div>
 </template>
@@ -190,16 +188,6 @@ export default {
                               break
                            }
                         }
-                        // data.files.forEach((el, index) => {
-                        //    console.log('vvvvv')
-                        //    if (index === 4) {
-                        //       return false
-                        //    }
-                        //    elm.image = this.handleCheckFile(el.path)
-                        //    console.log(el.image)
-                        //    this.handleCheckFile(el.path)
-                        // })
-
                      }
                      elm.files = fileNumber
                      elm.list = total
@@ -278,9 +266,9 @@ export default {
       log(evt) {
          window.console.log(evt);
       },
-      scrollEnd() {
+      scrollEnd(value = 'todo') {
          setTimeout(function () {
-            document.getElementById('todo').scrollIntoView()
+            document.getElementById(value).scrollIntoView()
          }, 100)
       },
       renameWork(id, title) {
@@ -343,10 +331,6 @@ export default {
       formatDate(value) {
          return moment(value).format('DD-MM-YYYY')
       },
-      // checkMove: function(evt){
-      //    window.console.log(evt);
-      //    // return (evt.draggedContext.element.name!=='apple');
-      // }
       handleCheckFile(name) {
          let bool = false
          let lastIndex = name.lastIndexOf('.')

@@ -7,9 +7,9 @@
          </div>
          <div class="card-utilities">
             <el-tooltip class="item" effect="dark" content="Đánh dấu hoàn thành" placement="bottom"
-                        v-if="card.status !== 2">
+                        v-if="card.status !== 3">
                <i class="el-icon-check card-attach-item" @click="handleComplete()"
-                  v-if="card.status !== 2"></i>
+                  v-if="card.status !== 3"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Đính kèm" placement="bottom">
                <i class="el-icon-paperclip card-attach-item"  @change="upload"></i>
@@ -47,11 +47,20 @@
             <div class="right-box">
                <i class="el-icon-date" @click="showDatePicker()"></i>
                <el-date-picker class="deadline-item" ref="openDatePicker" size="mini" type="date" align="right"
-                               v-model="deadline" @change="changeDeadline()">
+                               v-model="deadline" @change="changeDeadline()"
+                               @blur="deadline = ''">
                </el-date-picker>
                <span class="time-span" v-if="deadlineDisplay.length > 0">
                   {{ deadlineDisplay }}
                   <i class="el-icon-close" @click="changeDeadline(false)"></i>
+                  <b :class="{
+                     bg_success: calculateDeadline() === 'Đã hoàn thành',
+                     bg_danger: calculateDeadline() === 'Quá hạn',
+                     bg_primary: calculateDeadline() === 'Gần hết hạn',
+                     display_none: calculateDeadline() === '',
+                  }">
+                     {{ calculateDeadline() }}
+                  </b>
                </span>
                <span class="time-span" v-else>Đang cập nhật</span>
             </div>
@@ -83,7 +92,7 @@
                    type="textarea"
                    @blur="handleUpdateCard()"
                    :autosize="{ minRows: 5}"
-                   placeholder="Please input"
+                   placeholder="Nhập mô tả"
                    v-model="card.description">
                </el-input>
             </div>
@@ -285,8 +294,7 @@ export default {
          }, 500)
       },
       closeCard() {
-         this.updateIsShow(false)
-         this.updateIsDsNone(true)
+         this.$emit('close', 1)
       },
       showDatePicker() {
          this.$refs.openDatePicker.showPicker()
@@ -397,7 +405,7 @@ export default {
                });
                this.refreshData()
                this.getData()
-               // this.$emit('change', 1)
+               this.$emit('change', 1)
             })
          }
       },
@@ -431,6 +439,7 @@ export default {
                   message: 'Xóa công việc con thành công'
                });
                this.getData()
+               this.$emit('change', 1)
             }).catch(() => {
                this.$message.error('Xóa công việc con thất bại');
             })
@@ -529,7 +538,7 @@ export default {
       },
       handleComplete() {
          api.changeStatusCard({
-            status: 2
+            status: 3
          }, this.cardId).then(() => {
             this.$message({
                type: 'success',
@@ -539,6 +548,22 @@ export default {
          }).catch(() => {
             this.$message.error('Chưa hoàn thành');
          })
+      },
+      calculateDeadline() {
+         let text = ''
+         if (this.card.status !== 3) {
+            let now = new Date()
+            let data = moment(this.card.deadline)
+            if (moment(now).isSame(data, 'day')) {
+               text = 'Gần hết hạn'
+            } else if(data.diff(now, 'days') < 0) {
+               text = 'Quá hạn'
+            }
+         } else {
+            text = 'Đã hoàn thành'
+         }
+         console.log(this.card.status)
+         return text
       }
    },
    watch: {

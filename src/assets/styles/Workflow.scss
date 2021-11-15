@@ -15,6 +15,9 @@
             .section {
                width: 280px;
                margin: 0 10px;
+               padding: 10px 5px;
+               background-color: #ebecf0;
+               border-radius: 5px;
 
                .section-box-header {
                   display: flex;
@@ -27,6 +30,7 @@
                      text-align: left;
                      cursor: pointer;
                      width: 75%;
+                     padding-left: 8px;
                   }
 
                   .section-action {
@@ -39,7 +43,7 @@
                         border-radius: 5px;
 
                         &:hover {
-                           background-color: #edeef0;
+                           background-color: white;
                         }
 
                         .section-action-icon {
@@ -55,7 +59,7 @@
                .section-box-content-wrap {
                   overflow: auto;
                   max-height: 84vh;
-                  padding: 1px 2px 0 2px;
+                  padding: 1px 3px 0 2px;
 
                   .flag_new_card {
                      margin-bottom: 10px;
@@ -93,7 +97,7 @@
                         border-radius: 5px;
                         border: 1px solid white;
                         box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-                        margin: 0 0 10px 0;
+                        margin: 0 0 11px 0;
 
                         &:hover {
                            cursor: pointer;
@@ -152,7 +156,6 @@
          display: inline-block;
          text-transform: capitalize;
          color: white;
-         min-width: 17%;
          font-size: 11px;
          font-weight: bold;
       }
@@ -161,9 +164,9 @@
    .task-other-info {
       display: flex;
       justify-content: space-between;
-      padding-top: 15px;
 
       .deadline {
+         padding-top: 10px;
          width: 50%;
 
          .deadline-picker {
@@ -179,6 +182,10 @@
       .todo-attach {
          width: 50%;
          text-align: right;
+         padding-top: 10px;
+         display: flex;
+         align-items: end;
+         justify-content: end;
 
          .todo-attach-item {
             font-size: 13px;
@@ -197,7 +204,7 @@
 }
 
 .other-new-work {
-   padding-top: 22px;
+   padding-top: 20px;
 
    .add-new-list {
       width: 280px;
@@ -205,11 +212,14 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      height: 30px;
+      height: 40px;
       cursor: pointer;
+      color: white;
 
       &:hover {
-         color: #04befe;
+         color: rgb(21 27 38);
+         background-color: #ebecf0;
+         border-radius: 5px;
       }
 
       .add-card-icon {
@@ -218,8 +228,18 @@
       }
    }
 
-   .box-scp {
-      width: 270px;
+   .allb {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 280px;
+      height: 40px;
+      background-color: #ebecf0;
+      border-radius: 5px;
+
+      .box-scp {
+         width: 90%;
+      }
    }
 }
 
