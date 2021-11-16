@@ -44,7 +44,13 @@
                              :id="`toCard${card.id}`" @click="detailCard(card.id)">
                            <el-image :src="card.image" v-if="card.image"></el-image>
                            <div class="task-info">
-                              <div class="task-name">{{ card.title }}</div>
+                              <div class="task-name">
+                                 <span v-if="card.status === 3" style="color: limegreen; font-weight: bold;">
+                                    <i class="el-icon-success"></i>
+                                    {{ card.title }}
+                                 </span>
+                                 <span v-else>{{ card.title }}</span>
+                              </div>
                               <div class="tag-list" v-if="card.labels.length > 0">
                               <span v-for="(label) in card.labels" :key="label.id"
                                     :style="{background: label.color}" class="tag-item">
@@ -310,10 +316,6 @@ export default {
             }).then(() => {
                this.newCard = ''
                this.getAllData()
-               this.$message({
-                  message: 'Tạo thẻ thành công.',
-                  type: 'success'
-               });
             })
          } else {
             this.workflow[indexDirectory].isNewCard = true

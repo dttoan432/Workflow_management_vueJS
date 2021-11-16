@@ -51,10 +51,16 @@
                           @click="toggleUpdateTag()">
                   Đóng
                </el-button>
-               <el-button type="danger" size="small" class="btn-oop oop-1 float-right"
-                          @click="handleDeleteTag()">
-                  Xóa
-               </el-button>
+               <el-popconfirm title="Bạn có chắc chắn muốn xóa hay không?" @confirm="handleDeleteTag()">
+                  <el-button type="danger" size="small" class="btn-oop oop-1 float-right"
+                             slot="reference">
+                     Xóa
+                  </el-button>
+               </el-popconfirm>
+<!--               <el-button type="danger" size="small" class="btn-oop oop-1 float-right"-->
+<!--                          @click="handleDeleteTag()">-->
+<!--                  Xóa-->
+<!--               </el-button>-->
             </div>
          </div>
       </div>
@@ -128,10 +134,6 @@ export default {
             name: this.tag,
             color: this.colorTag
          }, this.cardId).then(() => {
-            this.$message({
-               type: 'success',
-               message: 'Tạo nhãn thành công'
-            });
             this.tag = ''
             this.handleEmit()
             setTimeout(() => {
@@ -146,10 +148,6 @@ export default {
             api.addTag({
                label_id: id
             }, this.cardId).then(() => {
-               this.$message({
-                  type: 'success',
-                  message: 'Gắn nhãn thành công'
-               });
             }).catch(() => {
                this.$message.error('Gắn nhãn thất bại');
             })
@@ -158,10 +156,6 @@ export default {
             api.detachTag({
                label_id: id
             }, this.cardId).then(() => {
-               this.$message({
-                  type: 'success',
-                  message: 'Gỡ nhãn thành công'
-               });
                this.handleEmit()
             }).catch(() => {
                this.$message.error('Gỡ nhãn thất bại');
@@ -174,38 +168,27 @@ export default {
               name: this.tag,
               color: this.colorTag
            }, this.idLabel).then(() => {
-              this.$message({
-                 type: 'success',
-                 message: 'Sửa nhãn thành công'
-              });
               this.reset()
               this.handleEmit()
               setTimeout(() => {
                  this.getLabelActive()
               }, 500)
+           }).catch(() => {
+              this.$message.error('Cập nhật nhãn thất bại');
            })
         }
       },
       handleDeleteTag() {
          if (this.idLabel !== '') {
-            this.$confirm(`Bạn có chắc chắn muốn xóa hay không?`, 'Xóa nhãn', {
-               confirmButtonText: 'Xóa',
-               cancelButtonText: 'Đóng',
-               type: 'warning'
-            }).then(() => {
-               console.log(this.idLabel)
-               api.deleteTag(this.idLabel).then(() => {
-                  this.$message({
-                     type: 'success',
-                     message: 'Xóa nhãn thành công'
-                  });
-                  this.handleEmit()
-                  setTimeout(() => {
-                     this.getLabelActive()
-                  }, 500)
-                  this.reset()
-               })
-            });
+            api.deleteTag(this.idLabel).then(() => {
+               this.handleEmit()
+               setTimeout(() => {
+                  this.getLabelActive()
+               }, 500)
+               this.reset()
+            }).catch(() => {
+               this.$message.error('Xóa nhãn thất bại');
+            })
          }
       },
       toggleUpdateTag(data = 0) {

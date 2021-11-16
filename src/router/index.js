@@ -41,6 +41,10 @@ router.beforeEach((to, from, next) => {
         next({ name: 'Login'})
     } else if(to.name === 'Login' && store.state.auth.isAuthenticated) {
         next({ name: 'Workflow' })
+    } else if (to.path === '/' && store.state.auth.isAuthenticated) {
+        next({ name: 'Workflow' })
+    } else if (to.name === null) {
+        next({ name: 'Workflow' })
     } else {
         next()
     }

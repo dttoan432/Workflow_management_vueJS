@@ -309,10 +309,6 @@ export default {
          api.changeDeadlineCard({
             deadline: date
          }, this.card.id).then(() => {
-            this.$message({
-               message: 'Thay đổi deadline thành công.',
-               type: 'success'
-            });
             this.getData()
             this.$emit('change', 1)
          })
@@ -466,6 +462,8 @@ export default {
          api.createFile(data, this.card.id).then(() => {
             this.getData()
             this.$emit('change', 1)
+         }).catch(() => {
+            this.$message.error('Định dạng tệp tin không được hỗ trợ');
          })
       },
       handleCheckFile(name) {
@@ -520,6 +518,7 @@ export default {
             status: 3,
          }, this.cardId).then(() => {
             this.getData()
+            this.$emit('change', 1)
          }).catch(() => {
             this.$message.error('Thất bại');
          })
@@ -537,7 +536,6 @@ export default {
          } else {
             text = 'Đã hoàn thành'
          }
-         console.log(this.card.status)
          return text
       }
    },
