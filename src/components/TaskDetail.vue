@@ -12,7 +12,7 @@
                   v-if="card.status !== 3"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Đính kèm" placement="bottom">
-               <i class="el-icon-paperclip card-attach-item"  @change="upload"></i>
+               <i class="el-icon-paperclip card-attach-item"  @click="showUpload()"></i>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="Việc cần làm" placement="bottom">
                <el-popover
@@ -179,7 +179,7 @@
                                  <div slot="reference">Sửa</div>
                                  <el-input placeholder="" v-model="file.name"></el-input>
                                  <el-button type="primary" size="small" class="gcc"
-                                            @click="handleRenameFile(file.name, file.id)">
+                                            @click="handleRenameFile(file.name, file.id, fileIndex)">
                                     Thay đổi
                                  </el-button>
                               </el-popover>
@@ -318,14 +318,20 @@ export default {
          })
       },
       handleUpdateCard() {
-         let data = {
-            title: this.card.title,
-            description: this.card.description
-         }
+         if (this.card.title !== '') {
+            let data = {
+               title: this.card.title,
+               description: this.card.description
+            }
 
-         api.updateCard(data, this.card.id).then(() => {
-            this.$emit('change', 1)
-         })
+            api.updateCard(data, this.card.id).then(() => {
+               this.$emit('change', 1)
+            }).catch(() => {
+               this.$message.error('Cập nhật thẻ thất bại');
+            })
+         } else {
+            this.$message.error('Tên thẻ không được để trống')
+         }
       },
       handleDeleteCard() {
          this.$confirm(`Bạn có chắc chắn muốn xóa thẻ "${this.card.title}" hay không?`, 'Xóa thẻ', {
@@ -334,10 +340,6 @@ export default {
             type: 'warning'
          }).then(() => {
             api.deleteCard(this.card.id).then(() => {
-               this.$message({
-                  type: 'success',
-                  message: 'Xóa thẻ thành công'
-               });
                this.closeCard()
                this.$emit('change', 1)
             }).catch(() => {
@@ -351,14 +353,11 @@ export default {
                title: this.newCheckList,
                card_id: this.card.id
             }).then(() => {
-               this.$message({
-                  message: 'Thêm việc cần làm thành công.',
-                  type: 'success'
-               });
                this.visibleCheckList = false
                this.refreshData()
                this.getData()
-               this.$emit('change', 1)
+            }).catch(() => {
+               this.$message.error('Tạo công việc thất bại');
             })
          }
       },
@@ -368,12 +367,10 @@ export default {
             api.updateCheckList({
                title: data.title,
             }, data.id).then(() => {
-               this.$message({
-                  message: 'Cập nhật việc cần làm thành công.',
-                  type: 'success'
-               });
                this.refreshData()
                this.getData()
+            }).catch(() => {
+               this.$message.error('Cập nhật công việc thất bại');
             })
          }
       },
@@ -384,13 +381,12 @@ export default {
             type: 'warning'
          }).then(() => {
             api.deleteCheckList(id).then(() => {
-               this.$message({
-                  message: 'Xóa việc cần làm thành công.',
-                  type: 'success'
-               });
                this.refreshData()
                this.getData()
+               this.$emit('change', 1)
             })
+         }).catch(() => {
+            this.$message.error('Xóa công việc thất bại');
          });
       },
       handleCreateCheckListChild(checkListId) {
@@ -399,27 +395,19 @@ export default {
                title: this.newCheckListChild,
                check_list_id: checkListId
             }).then(() => {
-               this.$message({
-                  message: 'Thêm việc cần con làm thành công.',
-                  type: 'success'
-               });
                this.refreshData()
                this.getData()
                this.$emit('change', 1)
-            })
+            }).catch(() => {
+               this.$message.error('Tạo công việc con thất bại');
+            });
          }
       },
       handleUpdateCheckListChild(name, id) {
          if (name !== '') {
             api.updateCheckListChild({
                title: name
-            }, id).then(() => {
-               this.$message({
-                  type: 'success',
-                  message: 'Cập nhật công việc con thành công'
-               });
-               this.getData()
-            }).catch(() => {
+            }, id).then().catch(() => {
                this.$message.error('Cập nhật công việc con thất bại');
             })
          } else {
@@ -469,10 +457,6 @@ export default {
          this.card.check_lists.push([])
          this.card.check_lists.pop()
       },
-      beforeRemove(file) {
-         console.log('oka')
-         return this.$confirm(`Cancel the transfert of ${file.name} ?`);
-      },
       showUpload() {
          this.$refs.upload.click()
       },
@@ -480,10 +464,6 @@ export default {
          let data = new FormData();
          data.append('file', e.target.files[0]);
          api.createFile(data, this.card.id).then(() => {
-            this.$message({
-               message: 'Upload file thành công.',
-               type: 'success'
-            });
             this.getData()
             this.$emit('change', 1)
          })
@@ -500,18 +480,17 @@ export default {
 
          return bool
       },
-      handleRenameFile(name, id) {
+      handleRenameFile(name, id, index) {
          if (name !== '') {
             api.updateFile({
                name: name
             }, id).then(() => {
-               this.$message({
-                  message: 'Rename thành công.',
-                  type: 'success'
-               });
+               this.items[index].toggle = false
+            }).catch(() => {
+               this.$message.error('Đổi tên thất bại');
+               this.getData()
             })
          }
-         this.getData()
       },
       handleDeleteFile(id) {
          this.$confirm(`Bạn có chắc chắn muốn xóa hay không?`, 'Xóa tệp tin', {
@@ -538,15 +517,11 @@ export default {
       },
       handleComplete() {
          api.changeStatusCard({
-            status: 3
+            status: 3,
          }, this.cardId).then(() => {
-            this.$message({
-               type: 'success',
-               message: 'Hoàn thành'
-            });
             this.getData()
          }).catch(() => {
-            this.$message.error('Chưa hoàn thành');
+            this.$message.error('Thất bại');
          })
       },
       calculateDeadline() {

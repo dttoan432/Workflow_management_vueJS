@@ -108,7 +108,10 @@
                            border-top-left-radius: 5px;
                            border-top-right-radius: 5px;
                            height: 150px;
-                           object-fit: cover;
+
+                           &::v-deep .el-image__inner {
+                              object-fit: cover;
+                           }
                         }
                      }
                   }
@@ -162,12 +165,13 @@
    }
 
    .task-other-info {
-      display: flex;
-      justify-content: space-between;
+      //display: flex;
+      //justify-content: start;
 
       .deadline {
          padding-top: 10px;
          width: 50%;
+         float: left;
 
          .deadline-picker {
             font-size: 13px;
@@ -183,9 +187,10 @@
          width: 50%;
          text-align: right;
          padding-top: 10px;
-         display: flex;
+         //display: flex;
          align-items: end;
          justify-content: end;
+         float: right;
 
          .todo-attach-item {
             font-size: 13px;

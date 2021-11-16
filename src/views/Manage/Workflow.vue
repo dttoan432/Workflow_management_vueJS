@@ -65,6 +65,7 @@
                                     </i>
                                  </div>
                               </div>
+                              <div style="clear: both;"></div>
                            </div>
                         </div>
                      </draggable>
@@ -196,7 +197,7 @@ export default {
             })
             setTimeout(() => {
                this.refreshData()
-            }, 300)
+            }, 500)
          })
       },
       showRename(index) {
@@ -291,11 +292,11 @@ export default {
          this.refreshData()
       },
       changeIndexDirectory(evt) {
-         // console.log(evt)
          api.changeIndexDirectory({
             index: evt.moved.newIndex
-         }, evt.moved.element.id).then(() => {
+         }, evt.moved.element.id).then(() => {}).catch(() => {
             this.getAllData()
+            this.$message.error('Thay đổi thất bại.');
          })
       },
       handleCreateCard(indexDirectory) {
